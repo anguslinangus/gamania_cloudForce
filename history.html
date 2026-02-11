@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>掃描紀錄 - StormIQ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Material+Icons+Outlined&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#81C0EA',
+            secondary: '#0242C7',
+            action: '#008CE3',
+            'action-hover': '#0078C7',
+            cyan: '#00B2E3',
+            success: '#198754',
+            warning: '#FFC107',
+            danger: '#DC3545',
+            'body-bg': '#F8F9FA',
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+          },
+          borderRadius: {
+            '2xl': '1rem',
+            '3xl': '1.25rem',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-body-bg font-sans text-gray-800 flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed left-0 top-0 h-full w-[260px] bg-white border-r border-gray-200 z-40 flex flex-col">
+    <!-- Logo -->
+    <div class="px-6 py-6 border-b border-gray-100">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-action to-secondary flex items-center justify-center">
+          <span class="material-icons-outlined text-white text-lg">shield</span>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold gradient-text leading-tight">StormIQ</h1>
+          <p class="text-[11px] text-gray-400 font-medium">資安掃描平台</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 py-4 overflow-y-auto">
+      <div class="mb-2 px-6">
+        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">主要功能</p>
+      </div>
+      <a href="dashboard.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">dashboard</span>
+        <span>儀表板</span>
+      </a>
+      <a href="upload.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">cloud_upload</span>
+        <span>上傳程式碼</span>
+      </a>
+      <a href="history.html" class="nav-item active">
+        <span class="material-icons-outlined text-xl">history</span>
+        <span>掃描紀錄</span>
+      </a>
+      <a href="profile.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">settings</span>
+        <span>帳戶設定</span>
+      </a>
+    </nav>
+
+    <!-- Bottom -->
+    <div class="border-t border-gray-100 p-4 space-y-3">
+      <!-- Points -->
+      <div class="flex items-center gap-2 px-2 py-2 bg-blue-50 rounded-xl">
+        <span class="material-icons-outlined text-action text-lg">toll</span>
+        <span class="text-xs text-gray-600">剩餘點數</span>
+        <span class="ml-auto text-sm font-bold text-action">42</span>
+      </div>
+      <!-- User -->
+      <div class="flex items-center gap-3 px-2">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-action to-cyan flex items-center justify-center text-white text-xs font-bold">RC</div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-800 truncate">Roger Chang</p>
+          <p class="text-[11px] text-gray-400">毅聲科技</p>
+        </div>
+      </div>
+      <!-- Switch to Admin -->
+      <a href="admin-dashboard.html" class="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-400 hover:text-action transition-colors mb-1">
+        <span class="material-icons-outlined text-lg">swap_horiz</span>
+        切換至管理後台
+      </a>
+      <!-- Logout -->
+      <a href="login.html" class="flex items-center gap-2 px-2 py-2 text-sm text-gray-500 hover:text-danger hover:bg-red-50 rounded-lg transition-all duration-150">
+        <span class="material-icons-outlined text-lg">logout</span>
+        <span>登出</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div id="main-content" class="ml-[260px] flex-1 flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-30">
+      <div class="flex items-center gap-2 text-sm">
+        <a href="dashboard.html" class="text-gray-400 hover:text-action transition-colors">首頁</a>
+        <span class="text-gray-300">/</span>
+        <span class="text-gray-700 font-medium">掃描紀錄</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <button class="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+          <span class="material-icons-outlined text-xl">notifications</span>
+          <span class="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full"></span>
+        </button>
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-action to-cyan flex items-center justify-center text-white text-xs font-bold">RC</div>
+          <span class="text-sm font-medium text-gray-700">Roger Chang</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="flex-1 p-8">
+      <!-- Page Title -->
+      <div class="mb-6 reveal">
+        <h2 class="text-2xl font-bold text-gray-900">掃描紀錄</h2>
+        <p class="text-sm text-gray-500 mt-1">查看所有上傳檔案的掃描狀態與歷史紀錄</p>
+      </div>
+
+      <!-- Filters -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-6 reveal">
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
+          <!-- Search -->
+          <div class="relative flex-1 w-full">
+            <span class="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl">search</span>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="搜尋編號、專案名稱、檔案名稱..."
+              class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:bg-white transition-colors"
+              oninput="filterTable()"
+            >
+          </div>
+          <!-- Status Filter -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-sm text-gray-500 mr-1">狀態：</span>
+            <button class="filter-btn active px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-150" data-status="all" onclick="setFilter('all', this)">全部</button>
+            <button class="filter-btn px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-150" data-status="uploaded" onclick="setFilter('uploaded', this)">已上傳</button>
+            <button class="filter-btn px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-150" data-status="scanning" onclick="setFilter('scanning', this)">掃描中</button>
+            <button class="filter-btn px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-150" data-status="completed" onclick="setFilter('completed', this)">已完成</button>
+            <button class="filter-btn px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-150" data-status="failed" onclick="setFilter('failed', this)">失敗</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Table -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden reveal">
+        <div class="overflow-x-auto">
+          <table class="data-table" id="historyTable">
+            <thead>
+              <tr class="bg-gray-50/50">
+                <th>上傳編號</th>
+                <th>專案名稱</th>
+                <th>檔案名稱</th>
+                <th>上傳者</th>
+                <th>上傳時間</th>
+                <th>狀態</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-status="completed">
+                <td class="font-mono text-xs text-gray-500">UP-20260210</td>
+                <td class="font-medium text-gray-800">金流模組安全檢測</td>
+                <td class="text-gray-600">payment-module.zip</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-br from-action to-cyan flex items-center justify-center text-white text-[10px] font-bold">RC</div>
+                    <span class="text-sm">Roger Chang</span>
+                  </div>
+                </td>
+                <td class="text-gray-500 text-sm">2026/02/10 14:30</td>
+                <td><span class="badge badge-completed">已完成</span></td>
+                <td>
+                  <button onclick="openModal('downloadModal')" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-action hover:text-white hover:bg-action border border-action rounded-lg transition-all duration-150">
+                    <span class="material-icons-outlined text-sm">download</span>
+                    下載報告
+                  </button>
+                </td>
+              </tr>
+              <tr data-status="scanning">
+                <td class="font-mono text-xs text-gray-500">UP-20260209</td>
+                <td class="font-medium text-gray-800">認證服務掃描</td>
+                <td class="text-gray-600">auth-service.tar.gz</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold">林</div>
+                    <span class="text-sm">林小華</span>
+                  </div>
+                </td>
+                <td class="text-gray-500 text-sm">2026/02/09 09:15</td>
+                <td><span class="badge badge-scanning animate-pulse">掃描中</span></td>
+                <td><span class="text-xs text-gray-400">—</span></td>
+              </tr>
+              <tr data-status="completed">
+                <td class="font-mono text-xs text-gray-500">UP-20260208</td>
+                <td class="font-medium text-gray-800">API 閘道檢測</td>
+                <td class="text-gray-600">api-gateway.zip</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-br from-action to-cyan flex items-center justify-center text-white text-[10px] font-bold">RC</div>
+                    <span class="text-sm">Roger Chang</span>
+                  </div>
+                </td>
+                <td class="text-gray-500 text-sm">2026/02/08 16:45</td>
+                <td><span class="badge badge-completed">已完成</span></td>
+                <td>
+                  <button onclick="openModal('downloadModal')" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-action hover:text-white hover:bg-action border border-action rounded-lg transition-all duration-150">
+                    <span class="material-icons-outlined text-sm">download</span>
+                    下載報告
+                  </button>
+                </td>
+              </tr>
+              <tr data-status="failed">
+                <td class="font-mono text-xs text-gray-500">UP-20260207</td>
+                <td class="font-medium text-gray-800">用戶入口網站</td>
+                <td class="text-gray-600">user-portal.zip</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center text-white text-[10px] font-bold">張</div>
+                    <span class="text-sm">張美玲</span>
+                  </div>
+                </td>
+                <td class="text-gray-500 text-sm">2026/02/07 11:20</td>
+                <td><span class="badge badge-failed">失敗</span></td>
+                <td>
+                  <button onclick="handleReupload(this)" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-danger hover:text-white hover:bg-danger border border-danger rounded-lg transition-all duration-150">
+                    <span class="material-icons-outlined text-sm">refresh</span>
+                    重新上傳
+                  </button>
+                </td>
+              </tr>
+              <tr data-status="completed">
+                <td class="font-mono text-xs text-gray-500">UP-20260205</td>
+                <td class="font-medium text-gray-800">行動應用程式</td>
+                <td class="text-gray-600">mobile-app.zip</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-br from-action to-cyan flex items-center justify-center text-white text-[10px] font-bold">RC</div>
+                    <span class="text-sm">Roger Chang</span>
+                  </div>
+                </td>
+                <td class="text-gray-500 text-sm">2026/02/05 08:00</td>
+                <td><span class="badge badge-completed">已完成</span></td>
+                <td>
+                  <button onclick="openModal('downloadModal')" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-action hover:text-white hover:bg-action border border-action rounded-lg transition-all duration-150">
+                    <span class="material-icons-outlined text-sm">download</span>
+                    下載報告
+                  </button>
+                </td>
+              </tr>
+              <tr data-status="uploaded">
+                <td class="font-mono text-xs text-gray-500">UP-20260204</td>
+                <td class="font-medium text-gray-800">後台管理系統</td>
+                <td class="text-gray-600">admin-panel.zip</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold">林</div>
+                    <span class="text-sm">林小華</span>
+                  </div>
+                </td>
+                <td class="text-gray-500 text-sm">2026/02/04 17:30</td>
+                <td><span class="badge badge-uploaded">已上傳</span></td>
+                <td><span class="text-xs text-gray-400">—</span></td>
+              </tr>
+              <tr data-status="completed">
+                <td class="font-mono text-xs text-gray-500">UP-20260203</td>
+                <td class="font-medium text-gray-800">資料庫連線模組</td>
+                <td class="text-gray-600">db-connector.tar.gz</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center text-white text-[10px] font-bold">張</div>
+                    <span class="text-sm">張美玲</span>
+                  </div>
+                </td>
+                <td class="text-gray-500 text-sm">2026/02/03 10:00</td>
+                <td><span class="badge badge-completed">已完成</span></td>
+                <td>
+                  <button onclick="openModal('downloadModal')" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-action hover:text-white hover:bg-action border border-action rounded-lg transition-all duration-150">
+                    <span class="material-icons-outlined text-sm">download</span>
+                    下載報告
+                  </button>
+                </td>
+              </tr>
+              <tr data-status="scanning">
+                <td class="font-mono text-xs text-gray-500">UP-20260202</td>
+                <td class="font-medium text-gray-800">電子報系統</td>
+                <td class="text-gray-600">newsletter-sys.zip</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-br from-action to-cyan flex items-center justify-center text-white text-[10px] font-bold">RC</div>
+                    <span class="text-sm">Roger Chang</span>
+                  </div>
+                </td>
+                <td class="text-gray-500 text-sm">2026/02/02 13:45</td>
+                <td><span class="badge badge-scanning animate-pulse">掃描中</span></td>
+                <td><span class="text-xs text-gray-400">—</span></td>
+              </tr>
+              <tr data-status="uploaded">
+                <td class="font-mono text-xs text-gray-500">UP-20260201</td>
+                <td class="font-medium text-gray-800">檔案上傳服務</td>
+                <td class="text-gray-600">file-upload-svc.zip</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold">林</div>
+                    <span class="text-sm">林小華</span>
+                  </div>
+                </td>
+                <td class="text-gray-500 text-sm">2026/02/01 09:20</td>
+                <td><span class="badge badge-uploaded">已上傳</span></td>
+                <td><span class="text-xs text-gray-400">—</span></td>
+              </tr>
+              <tr data-status="failed">
+                <td class="font-mono text-xs text-gray-500">UP-20260130</td>
+                <td class="font-medium text-gray-800">推播通知模組</td>
+                <td class="text-gray-600">push-notification.rar</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center text-white text-[10px] font-bold">張</div>
+                    <span class="text-sm">張美玲</span>
+                  </div>
+                </td>
+                <td class="text-gray-500 text-sm">2026/01/30 15:10</td>
+                <td><span class="badge badge-failed">失敗</span></td>
+                <td>
+                  <button onclick="handleReupload(this)" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-danger hover:text-white hover:bg-danger border border-danger rounded-lg transition-all duration-150">
+                    <span class="material-icons-outlined text-sm">refresh</span>
+                    重新上傳
+                  </button>
+                </td>
+              </tr>
+              <tr data-status="completed">
+                <td class="font-mono text-xs text-gray-500">UP-20260128</td>
+                <td class="font-medium text-gray-800">客戶關係管理</td>
+                <td class="text-gray-600">crm-module.zip</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-br from-action to-cyan flex items-center justify-center text-white text-[10px] font-bold">RC</div>
+                    <span class="text-sm">Roger Chang</span>
+                  </div>
+                </td>
+                <td class="text-gray-500 text-sm">2026/01/28 11:30</td>
+                <td><span class="badge badge-completed">已完成</span></td>
+                <td>
+                  <button onclick="openModal('downloadModal')" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-action hover:text-white hover:bg-action border border-action rounded-lg transition-all duration-150">
+                    <span class="material-icons-outlined text-sm">download</span>
+                    下載報告
+                  </button>
+                </td>
+              </tr>
+              <tr data-status="completed">
+                <td class="font-mono text-xs text-gray-500">UP-20260125</td>
+                <td class="font-medium text-gray-800">庫存管理系統</td>
+                <td class="text-gray-600">inventory-sys.tar.gz</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold">林</div>
+                    <span class="text-sm">林小華</span>
+                  </div>
+                </td>
+                <td class="text-gray-500 text-sm">2026/01/25 14:00</td>
+                <td><span class="badge badge-completed">已完成</span></td>
+                <td>
+                  <button onclick="openModal('downloadModal')" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-action hover:text-white hover:bg-action border border-action rounded-lg transition-all duration-150">
+                    <span class="material-icons-outlined text-sm">download</span>
+                    下載報告
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex items-center justify-between px-6 py-4 border-t border-gray-100">
+          <p class="text-sm text-gray-500">顯示 1-10，共 28 筆</p>
+          <div class="flex items-center gap-1">
+            <button class="px-3 py-1.5 text-sm text-gray-400 rounded-lg cursor-not-allowed" disabled>
+              <span class="material-icons-outlined text-lg">chevron_left</span>
+            </button>
+            <button class="px-3 py-1.5 text-sm font-medium text-white bg-action rounded-lg">1</button>
+            <button class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" onclick="showToast('已切換至第 2 頁', 'info')">2</button>
+            <button class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" onclick="showToast('已切換至第 3 頁', 'info')">3</button>
+            <button class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+              <span class="material-icons-outlined text-lg">chevron_right</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Download Modal -->
+  <div id="downloadModal" class="modal-overlay fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+    <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-md p-0 overflow-hidden">
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-900">下載掃描報告</h3>
+        <button onclick="closeModal('downloadModal')" class="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+          <span class="material-icons-outlined">close</span>
+        </button>
+      </div>
+      <!-- Body -->
+      <div class="px-6 py-5">
+        <p class="text-sm text-gray-500 mb-4">請選擇報告下載格式：</p>
+        <div class="space-y-3">
+          <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:border-action hover:bg-blue-50/30 transition-all duration-150 has-[:checked]:border-action has-[:checked]:bg-blue-50/50">
+            <input type="radio" name="format" value="html" class="w-4 h-4 text-action focus:ring-action" checked>
+            <div class="flex items-center gap-3 flex-1">
+              <div class="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center">
+                <span class="material-icons-outlined text-orange-500">code</span>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-800">HTML 格式</p>
+                <p class="text-xs text-gray-400">互動式報告，可在瀏覽器中檢視</p>
+              </div>
+            </div>
+          </label>
+          <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:border-action hover:bg-blue-50/30 transition-all duration-150 has-[:checked]:border-action has-[:checked]:bg-blue-50/50">
+            <input type="radio" name="format" value="pdf" class="w-4 h-4 text-action focus:ring-action">
+            <div class="flex items-center gap-3 flex-1">
+              <div class="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center">
+                <span class="material-icons-outlined text-red-500">picture_as_pdf</span>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-800">PDF 格式</p>
+                <p class="text-xs text-gray-400">適合列印及歸檔保存</p>
+              </div>
+            </div>
+          </label>
+        </div>
+      </div>
+      <!-- Footer -->
+      <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+        <button onclick="closeModal('downloadModal')" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">取消</button>
+        <button onclick="handleDownload()" class="inline-flex items-center gap-1.5 px-5 py-2 text-sm font-medium text-white bg-action hover:bg-action-hover rounded-lg transition-colors">
+          <span class="material-icons-outlined text-sm">download</span>
+          下載
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/common.js"></script>
+  <script>
+    // Current filter state
+    let currentFilter = 'all';
+
+    // Filter button styling
+    function updateFilterButtons() {
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        if (btn.classList.contains('active')) {
+          btn.style.background = '#008CE3';
+          btn.style.color = '#fff';
+        } else {
+          btn.style.background = '#F3F4F6';
+          btn.style.color = '#6B7280';
+        }
+      });
+    }
+
+    // Set filter
+    function setFilter(status, btn) {
+      currentFilter = status;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateFilterButtons();
+      filterTable();
+    }
+
+    // Filter table rows
+    function filterTable() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const rows = document.querySelectorAll('#historyTable tbody tr');
+
+      rows.forEach(row => {
+        const status = row.dataset.status;
+        const text = row.textContent.toLowerCase();
+        const matchesFilter = currentFilter === 'all' || status === currentFilter;
+        const matchesSearch = !search || text.includes(search);
+        row.style.display = (matchesFilter && matchesSearch) ? '' : 'none';
+      });
+    }
+
+    // Handle download
+    function handleDownload() {
+      const format = document.querySelector('input[name="format"]:checked').value;
+      closeModal('downloadModal');
+      showToast(`報告下載中（${format.toUpperCase()} 格式）...`, 'success');
+    }
+
+    // Handle reupload
+    function handleReupload(btn) {
+      setButtonLoading(btn, true);
+      setTimeout(() => {
+        setButtonLoading(btn, false);
+        showToast('已重新提交上傳請求', 'success');
+      }, 1500);
+    }
+
+    // Init filter button styles
+    updateFilterButtons();
+  </script>
+</body>
+</html>

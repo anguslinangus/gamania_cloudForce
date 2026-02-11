@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>前台權限管理 - StormIQ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Material+Icons+Outlined&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#81C0EA',
+            secondary: '#0242C7',
+            action: '#008CE3',
+            'action-hover': '#0078C7',
+            cyan: '#00B2E3',
+            success: '#198754',
+            warning: '#FFC107',
+            danger: '#DC3545',
+            'body-bg': '#F8F9FA',
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+          },
+          borderRadius: {
+            '2xl': '1rem',
+            '3xl': '1.25rem',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-body-bg font-sans text-gray-800 flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed left-0 top-0 h-full w-[260px] bg-white border-r border-gray-200 z-40 flex flex-col">
+    <!-- Logo -->
+    <div class="p-6 pb-4">
+      <div class="flex items-center gap-2">
+        <span class="material-icons-outlined text-3xl text-action">shield</span>
+        <div>
+          <h1 class="text-xl font-bold gradient-text">StormIQ</h1>
+          <p class="text-[11px] text-gray-400 font-medium tracking-wide">管理後台</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 py-2 overflow-y-auto">
+      <a href="admin-dashboard.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">analytics</span>
+        <span>管理儀表板</span>
+      </a>
+      <a href="admin-customers.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">business</span>
+        <span>客戶管理</span>
+      </a>
+      <a href="admin-approval.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">fact_check</span>
+        <span>審核管理</span>
+        <span class="ml-auto px-2 py-0.5 text-[10px] font-semibold bg-yellow-100 text-yellow-700 rounded-full">PDM</span>
+      </a>
+      <a href="admin-points.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">toll</span>
+        <span>點數管理</span>
+      </a>
+      <a href="admin-perm-frontend.html" class="nav-item active">
+        <span class="material-icons-outlined text-xl">manage_accounts</span>
+        <span>前台權限管理</span>
+      </a>
+      <a href="admin-perm-backend.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">shield</span>
+        <span>後台權限管理</span>
+      </a>
+    </nav>
+
+    <!-- Bottom -->
+    <div class="p-4 border-t border-gray-100">
+      <div class="flex items-center gap-3 px-3 py-2">
+        <div class="w-9 h-9 rounded-full bg-action/10 flex items-center justify-center">
+          <span class="material-icons-outlined text-action text-lg">person</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-1.5">
+            <span class="badge badge-scanning text-[10px] px-1.5 py-0">業務</span>
+            <span class="text-gray-300 text-[10px]">·</span>
+            <span class="badge badge-pending text-[10px] px-1.5 py-0">PDM</span>
+          </div>
+          <p class="text-sm font-medium text-gray-800 truncate mt-0.5">Admin Chen</p>
+        </div>
+      </div>
+      <!-- Switch to Frontend -->
+      <a href="dashboard.html" class="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-400 hover:text-action transition-colors mb-1">
+        <span class="material-icons-outlined text-lg">swap_horiz</span>
+        切換至客戶端
+      </a>
+      <a href="login.html" class="nav-item mt-1 text-gray-400 hover:text-danger">
+        <span class="material-icons-outlined text-lg">logout</span>
+        <span>登出</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div id="main-content" class="ml-[260px] flex-1 flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-30">
+      <div class="flex items-center gap-2 text-sm">
+        <span class="text-gray-400">管理後台</span>
+        <span class="material-icons-outlined text-gray-300 text-sm">chevron_right</span>
+        <span class="text-gray-700 font-medium">前台權限管理</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <span class="material-icons-outlined text-gray-400 cursor-pointer hover:text-gray-600 transition-colors">notifications</span>
+          <span class="absolute -top-1 -right-1 w-4 h-4 bg-danger text-white text-[10px] font-bold rounded-full flex items-center justify-center">3</span>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-action/10 flex items-center justify-center">
+          <span class="material-icons-outlined text-action text-sm">person</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="flex-1 p-8">
+      <!-- Page Title -->
+      <div class="mb-6 reveal">
+        <h2 class="text-2xl font-bold text-gray-900">前台權限管理</h2>
+        <p class="text-sm text-gray-500 mt-1">管理各客戶公司帳號的前台功能權限</p>
+      </div>
+
+      <!-- Step 1: Company Selector -->
+      <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm mb-6 reveal">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-full bg-action text-white flex items-center justify-center text-sm font-bold">1</div>
+          <h3 class="text-base font-semibold text-gray-900">選擇客戶公司</h3>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="companyGrid">
+          <button onclick="selectCompany('yisheng')" class="company-card group p-4 border-2 border-action bg-blue-50/50 rounded-xl text-left transition-all duration-150" data-company="yisheng">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="material-icons-outlined text-action text-lg">business</span>
+              <span class="text-sm font-semibold text-gray-800">毅聲科技</span>
+            </div>
+            <p class="text-xs text-gray-500">4 個帳號</p>
+          </button>
+          <button onclick="selectCompany('daxin')" class="company-card group p-4 border-2 border-gray-200 hover:border-action/50 rounded-xl text-left transition-all duration-150" data-company="daxin">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="material-icons-outlined text-gray-400 group-hover:text-action text-lg">business</span>
+              <span class="text-sm font-semibold text-gray-800">達新資訊</span>
+            </div>
+            <p class="text-xs text-gray-500">3 個帳號</p>
+          </button>
+          <button onclick="selectCompany('haitong')" class="company-card group p-4 border-2 border-gray-200 hover:border-action/50 rounded-xl text-left transition-all duration-150" data-company="haitong">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="material-icons-outlined text-gray-400 group-hover:text-action text-lg">business</span>
+              <span class="text-sm font-semibold text-gray-800">海通國際</span>
+            </div>
+            <p class="text-xs text-gray-500">3 個帳號</p>
+          </button>
+          <button onclick="selectCompany('yongfeng')" class="company-card group p-4 border-2 border-gray-200 hover:border-action/50 rounded-xl text-left transition-all duration-150" data-company="yongfeng">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="material-icons-outlined text-gray-400 group-hover:text-action text-lg">business</span>
+              <span class="text-sm font-semibold text-gray-800">永豐數位</span>
+            </div>
+            <p class="text-xs text-gray-500">4 個帳號</p>
+          </button>
+          <button onclick="selectCompany('lianhe')" class="company-card group p-4 border-2 border-gray-200 hover:border-action/50 rounded-xl text-left transition-all duration-150" data-company="lianhe">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="material-icons-outlined text-gray-400 group-hover:text-action text-lg">business</span>
+              <span class="text-sm font-semibold text-gray-800">聯合資安</span>
+            </div>
+            <p class="text-xs text-gray-500">2 個帳號</p>
+          </button>
+          <button onclick="selectCompany('zhonghua')" class="company-card group p-4 border-2 border-gray-200 hover:border-action/50 rounded-xl text-left transition-all duration-150" data-company="zhonghua">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="material-icons-outlined text-gray-400 group-hover:text-action text-lg">business</span>
+              <span class="text-sm font-semibold text-gray-800">中華軟體</span>
+            </div>
+            <p class="text-xs text-gray-500">3 個帳號</p>
+          </button>
+          <button onclick="selectCompany('taida')" class="company-card group p-4 border-2 border-gray-200 hover:border-action/50 rounded-xl text-left transition-all duration-150" data-company="taida">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="material-icons-outlined text-gray-400 group-hover:text-action text-lg">business</span>
+              <span class="text-sm font-semibold text-gray-800">台達智慧</span>
+            </div>
+            <p class="text-xs text-gray-500">4 個帳號</p>
+          </button>
+          <button onclick="selectCompany('guoguang')" class="company-card group p-4 border-2 border-gray-200 hover:border-action/50 rounded-xl text-left transition-all duration-150" data-company="guoguang">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="material-icons-outlined text-gray-400 group-hover:text-action text-lg">business</span>
+              <span class="text-sm font-semibold text-gray-800">國光網路</span>
+            </div>
+            <p class="text-xs text-gray-500">2 個帳號</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Accounts Permission Table -->
+      <div id="permissionSection" class="reveal">
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-action text-white flex items-center justify-center text-sm font-bold">2</div>
+              <div>
+                <h3 class="text-base font-semibold text-gray-900">帳號權限設定</h3>
+                <p class="text-xs text-gray-500 mt-0.5" id="selectedCompanyLabel">毅聲科技股份有限公司 — 4 個帳號</p>
+              </div>
+            </div>
+            <button onclick="savePermissions()" id="savePermBtn" class="inline-flex items-center gap-2 bg-action hover:bg-action-hover text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150">
+              <span class="material-icons-outlined text-lg">save</span>
+              儲存權限
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="data-table" id="permTable">
+              <thead>
+                <tr class="bg-gray-50/50">
+                  <th>帳號</th>
+                  <th>姓名</th>
+                  <th>Email</th>
+                  <th>角色</th>
+                  <th class="text-center">上傳程式碼</th>
+                  <th class="text-center">檢視掃描紀錄</th>
+                  <th class="text-center">下載報告</th>
+                  <th class="text-center">修改個人資料</th>
+                  <th class="text-center">管理員</th>
+                </tr>
+              </thead>
+              <tbody id="permTableBody">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-4 bg-blue-50 rounded-lg p-3">
+            <div class="flex items-start gap-2">
+              <span class="material-icons-outlined text-action text-lg mt-0.5">info</span>
+              <p class="text-xs text-gray-600">管理員權限開啟後，該帳號可管理同公司其他帳號的部分設定。權限變更儲存後立即生效。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/common.js"></script>
+  <script>
+    // Company accounts data
+    const companyAccounts = {
+      yisheng: {
+        name: '毅聲科技股份有限公司',
+        accounts: [
+          { id: 'YS-001', name: 'Roger Chang', email: 'roger.chang@yisheng.com', role: '程式碼上傳員', perms: [true, true, true, true, false] },
+          { id: 'YS-002', name: '林小華', email: 'xiaohua.lin@yisheng.com', role: '檢視人員', perms: [false, true, false, true, false] },
+          { id: 'YS-003', name: '張美玲', email: 'meiling.zhang@yisheng.com', role: '管理員', perms: [true, true, true, true, true] },
+          { id: 'YS-004', name: '王大明', email: 'daming.wang@yisheng.com', role: '檢視人員', perms: [false, true, false, false, false] },
+        ]
+      },
+      daxin: {
+        name: '達新資訊有限公司',
+        accounts: [
+          { id: 'DX-001', name: '陳志明', email: 'zhiming.chen@daxin.com', role: '管理員', perms: [true, true, true, true, true] },
+          { id: 'DX-002', name: '黃雅婷', email: 'yating.huang@daxin.com', role: '程式碼上傳員', perms: [true, true, true, true, false] },
+          { id: 'DX-003', name: '劉建宏', email: 'jianhong.liu@daxin.com', role: '檢視人員', perms: [false, true, false, true, false] },
+        ]
+      },
+      haitong: {
+        name: '海通國際科技',
+        accounts: [
+          { id: 'HT-001', name: '周文豪', email: 'wenhao.zhou@haitong.com', role: '管理員', perms: [true, true, true, true, true] },
+          { id: 'HT-002', name: '吳佳穎', email: 'jiaying.wu@haitong.com', role: '程式碼上傳員', perms: [true, true, true, false, false] },
+          { id: 'HT-003', name: '蔡明哲', email: 'mingzhe.cai@haitong.com', role: '檢視人員', perms: [false, true, false, true, false] },
+        ]
+      },
+      yongfeng: {
+        name: '永豐數位科技',
+        accounts: [
+          { id: 'YF-001', name: '許家豪', email: 'jiahao.xu@yongfeng.com', role: '管理員', perms: [true, true, true, true, true] },
+          { id: 'YF-002', name: '鄭淑芬', email: 'shufen.zheng@yongfeng.com', role: '程式碼上傳員', perms: [true, true, true, true, false] },
+          { id: 'YF-003', name: '楊志偉', email: 'zhiwei.yang@yongfeng.com', role: '程式碼上傳員', perms: [true, true, false, true, false] },
+          { id: 'YF-004', name: '林雅文', email: 'yawen.lin@yongfeng.com', role: '檢視人員', perms: [false, true, false, false, false] },
+        ]
+      },
+      lianhe: {
+        name: '聯合資安顧問',
+        accounts: [
+          { id: 'LH-001', name: '趙國強', email: 'guoqiang.zhao@lianhe.com', role: '管理員', perms: [true, true, true, true, true] },
+          { id: 'LH-002', name: '孫麗華', email: 'lihua.sun@lianhe.com', role: '程式碼上傳員', perms: [true, true, true, true, false] },
+        ]
+      },
+      zhonghua: {
+        name: '中華軟體開發',
+        accounts: [
+          { id: 'ZH-001', name: '何建民', email: 'jianmin.he@zhonghua.com', role: '管理員', perms: [true, true, true, true, true] },
+          { id: 'ZH-002', name: '馬曉萍', email: 'xiaoping.ma@zhonghua.com', role: '程式碼上傳員', perms: [true, true, true, false, false] },
+          { id: 'ZH-003', name: '朱偉傑', email: 'weijie.zhu@zhonghua.com', role: '檢視人員', perms: [false, true, false, true, false] },
+        ]
+      },
+      taida: {
+        name: '台達智慧系統',
+        accounts: [
+          { id: 'TD-001', name: '蘇明德', email: 'mingde.su@taida.com', role: '管理員', perms: [true, true, true, true, true] },
+          { id: 'TD-002', name: '葉秀蘭', email: 'xiulan.ye@taida.com', role: '程式碼上傳員', perms: [true, true, true, true, false] },
+          { id: 'TD-003', name: '廖志豪', email: 'zhihao.liao@taida.com', role: '程式碼上傳員', perms: [true, true, false, true, false] },
+          { id: 'TD-004', name: '謝美華', email: 'meihua.xie@taida.com', role: '檢視人員', perms: [false, true, false, false, false] },
+        ]
+      },
+      guoguang: {
+        name: '國光網路科技',
+        accounts: [
+          { id: 'GG-001', name: '呂國華', email: 'guohua.lu@guoguang.com', role: '管理員', perms: [true, true, true, true, true] },
+          { id: 'GG-002', name: '鍾佳琪', email: 'jiaqi.zhong@guoguang.com', role: '程式碼上傳員', perms: [true, true, true, true, false] },
+        ]
+      },
+    };
+
+    let currentCompany = 'yisheng';
+
+    function selectCompany(key) {
+      currentCompany = key;
+      // Update card selection UI
+      document.querySelectorAll('.company-card').forEach(card => {
+        if (card.dataset.company === key) {
+          card.classList.remove('border-gray-200');
+          card.classList.add('border-action', 'bg-blue-50/50');
+          card.querySelector('.material-icons-outlined').classList.remove('text-gray-400');
+          card.querySelector('.material-icons-outlined').classList.add('text-action');
+        } else {
+          card.classList.add('border-gray-200');
+          card.classList.remove('border-action', 'bg-blue-50/50');
+          card.querySelector('.material-icons-outlined').classList.add('text-gray-400');
+          card.querySelector('.material-icons-outlined').classList.remove('text-action');
+        }
+      });
+      renderPermissionTable(key);
+    }
+
+    function renderPermissionTable(key) {
+      const data = companyAccounts[key];
+      if (!data) return;
+      document.getElementById('selectedCompanyLabel').textContent = data.name + ' — ' + data.accounts.length + ' 個帳號';
+      const tbody = document.getElementById('permTableBody');
+      tbody.innerHTML = '';
+
+      data.accounts.forEach((acct, idx) => {
+        const tr = document.createElement('tr');
+        const roleBadge = acct.role === '管理員' ? 'badge-scanning' : acct.role === '程式碼上傳員' ? 'badge-completed' : 'badge-uploaded';
+        tr.innerHTML = `
+          <td class="font-medium text-gray-700">${acct.id}</td>
+          <td class="font-medium text-gray-800">${acct.name}</td>
+          <td class="text-gray-500 text-sm">${acct.email}</td>
+          <td><span class="badge ${roleBadge}">${acct.role}</span></td>
+          ${acct.perms.map((p, pi) => `
+            <td class="text-center">
+              <div class="toggle-switch ${p ? 'active' : ''} mx-auto" data-row="${idx}" data-perm="${pi}" onclick="togglePerm(this)"></div>
+            </td>
+          `).join('')}
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function togglePerm(el) {
+      el.classList.toggle('active');
+      const row = parseInt(el.dataset.row);
+      const perm = parseInt(el.dataset.perm);
+      const data = companyAccounts[currentCompany];
+      if (data) {
+        data.accounts[row].perms[perm] = el.classList.contains('active');
+      }
+    }
+
+    function savePermissions() {
+      const btn = document.getElementById('savePermBtn');
+      setButtonLoading(btn, true);
+      setTimeout(() => {
+        setButtonLoading(btn, false);
+        showToast('權限已成功儲存', 'success');
+      }, 1000);
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      renderPermissionTable('yisheng');
+    });
+  </script>
+</body>
+</html>

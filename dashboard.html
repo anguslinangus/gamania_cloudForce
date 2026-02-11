@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>儀表板 - StormIQ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Material+Icons+Outlined&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#81C0EA',
+            secondary: '#0242C7',
+            action: '#008CE3',
+            'action-hover': '#0078C7',
+            cyan: '#00B2E3',
+            success: '#198754',
+            warning: '#FFC107',
+            danger: '#DC3545',
+            'body-bg': '#F8F9FA',
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+          },
+          borderRadius: {
+            '2xl': '1rem',
+            '3xl': '1.25rem',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-body-bg font-sans text-gray-800 flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed left-0 top-0 h-full w-[260px] bg-white border-r border-gray-200 z-40 flex flex-col">
+    <!-- Logo -->
+    <div class="px-6 py-5 border-b border-gray-100">
+      <div class="flex items-center gap-2.5">
+        <span class="material-icons-outlined text-action text-2xl">security</span>
+        <div>
+          <h1 class="text-lg font-bold text-gray-900 leading-tight">StormIQ</h1>
+          <p class="text-[11px] text-gray-400 leading-tight">資安掃描平台</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 py-4">
+      <a href="dashboard.html" class="nav-item active">
+        <span class="material-icons-outlined text-xl">dashboard</span>
+        儀表板
+      </a>
+      <a href="upload.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">cloud_upload</span>
+        上傳程式碼
+      </a>
+      <a href="history.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">history</span>
+        掃描紀錄
+      </a>
+      <a href="profile.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">settings</span>
+        帳戶設定
+      </a>
+    </nav>
+
+    <!-- Bottom Section -->
+    <div class="border-t border-gray-100 p-4 space-y-3">
+      <!-- Points Balance -->
+      <div class="flex items-center gap-2 bg-blue-50 rounded-xl px-4 py-2.5">
+        <span class="material-icons-outlined text-action text-lg">toll</span>
+        <div>
+          <p class="text-[11px] text-gray-500 leading-tight">剩餘點數</p>
+          <p class="text-lg font-bold text-action leading-tight">42</p>
+        </div>
+      </div>
+      <!-- User Info -->
+      <div class="flex items-center gap-3 px-2">
+        <div class="w-8 h-8 rounded-full bg-action/10 flex items-center justify-center flex-shrink-0">
+          <span class="text-action font-semibold text-sm">R</span>
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-medium text-gray-900 truncate">Roger Chang</p>
+          <p class="text-[11px] text-gray-400 truncate">毅聲科技</p>
+        </div>
+      </div>
+      <!-- Switch to Admin -->
+      <a href="admin-dashboard.html" class="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-400 hover:text-action transition-colors mb-1">
+        <span class="material-icons-outlined text-lg">swap_horiz</span>
+        切換至管理後台
+      </a>
+      <!-- Logout -->
+      <a href="login.html" class="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-400 hover:text-danger transition-colors">
+        <span class="material-icons-outlined text-lg">logout</span>
+        登出
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div id="main-content" class="ml-[260px] flex-1 flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-30">
+      <!-- Breadcrumb -->
+      <div class="flex items-center gap-2 text-sm">
+        <span class="text-gray-400">首頁</span>
+        <span class="text-gray-300">/</span>
+        <span class="text-gray-700 font-medium">儀表板</span>
+      </div>
+      <!-- Right side -->
+      <div class="flex items-center gap-4">
+        <button class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors" onclick="showToast('暫無新通知', 'info')">
+          <span class="material-icons-outlined text-xl">notifications_none</span>
+          <span id="notification-badge" class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-danger text-white text-[10px] rounded-full flex items-center justify-center font-bold">3</span>
+        </button>
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-action/10 flex items-center justify-center">
+            <span class="text-action font-semibold text-sm">R</span>
+          </div>
+          <span class="text-sm text-gray-700 font-medium hidden sm:block">Roger Chang</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="flex-1 p-8">
+      <!-- Page Title -->
+      <div class="mb-8 reveal">
+        <h2 class="text-2xl font-bold text-gray-900">儀表板</h2>
+        <p class="text-sm text-gray-500 mt-1">歡迎回來，Roger。以下是您的帳戶概覽。</p>
+      </div>
+
+      <!-- Stat Cards Row -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Card 1: Remaining Points -->
+        <div class="stat-card reveal" onclick="showToast('查看點數詳情', 'info')">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <p class="text-sm text-gray-500 mb-1">剩餘點數</p>
+              <p class="text-3xl font-bold text-gray-900 count-up" data-target="42">0</p>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+              <span class="material-icons-outlined text-action">toll</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 mb-4">
+            <span class="text-xs rounded-full px-2 py-0.5 bg-yellow-50 text-yellow-700 font-medium">本月已使用 8 點</span>
+          </div>
+          <!-- Mini bar chart -->
+          <div class="flex items-end gap-1 h-8 mt-1">
+            <div class="w-full bg-blue-100 rounded-sm" style="height:40%"></div>
+            <div class="w-full bg-blue-100 rounded-sm" style="height:60%"></div>
+            <div class="w-full bg-blue-100 rounded-sm" style="height:35%"></div>
+            <div class="w-full bg-blue-100 rounded-sm" style="height:80%"></div>
+            <div class="w-full bg-blue-200 rounded-sm" style="height:55%"></div>
+            <div class="w-full bg-action/30 rounded-sm" style="height:70%"></div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-gray-50">
+            <a href="#" class="text-xs text-action hover:text-action-hover font-medium transition-colors">查看詳情 &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 2: Total Scans -->
+        <div class="stat-card reveal" onclick="showToast('查看掃描紀錄', 'info')">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <p class="text-sm text-gray-500 mb-1">掃描總數</p>
+              <p class="text-3xl font-bold text-gray-900 count-up" data-target="156">0</p>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+              <span class="material-icons-outlined text-success">security</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 mb-4">
+            <span class="text-xs rounded-full px-2 py-0.5 bg-green-50 text-success font-medium">+12 本月</span>
+          </div>
+          <!-- Mini sparkline -->
+          <div class="flex items-end gap-1 h-8 mt-1">
+            <div class="w-full bg-green-100 rounded-sm" style="height:30%"></div>
+            <div class="w-full bg-green-100 rounded-sm" style="height:50%"></div>
+            <div class="w-full bg-green-100 rounded-sm" style="height:45%"></div>
+            <div class="w-full bg-green-100 rounded-sm" style="height:65%"></div>
+            <div class="w-full bg-green-200 rounded-sm" style="height:80%"></div>
+            <div class="w-full bg-success/30 rounded-sm" style="height:100%"></div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-gray-50">
+            <a href="#" class="text-xs text-action hover:text-action-hover font-medium transition-colors">查看詳情 &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 3: Reports to Download -->
+        <div class="stat-card reveal" onclick="showToast('前往下載報告', 'info')">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <p class="text-sm text-gray-500 mb-1">待下載報告</p>
+              <p class="text-3xl font-bold text-gray-900 count-up" data-target="3">0</p>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0">
+              <span class="material-icons-outlined text-orange-500">download</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 mb-4">
+            <span class="text-xs rounded-full px-2 py-0.5 bg-orange-50 text-orange-600 font-medium">有 3 份報告已完成</span>
+          </div>
+          <!-- Mini donut -->
+          <div class="flex items-center gap-3 h-8 mt-1">
+            <canvas id="miniDonut" width="32" height="32"></canvas>
+            <div class="flex gap-3 text-[11px] text-gray-400">
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-action inline-block"></span>已完成</span>
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-gray-200 inline-block"></span>處理中</span>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-gray-50">
+            <a href="#" class="text-xs text-action hover:text-action-hover font-medium transition-colors">查看詳情 &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Bar Chart -->
+        <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm reveal">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="text-base font-semibold text-gray-900">近六個月掃描量</h3>
+              <p class="text-xs text-gray-400 mt-0.5">每月掃描數量趨勢</p>
+            </div>
+            <span class="text-xs text-gray-400 bg-gray-50 px-3 py-1 rounded-full">2025/09 - 2026/02</span>
+          </div>
+          <div class="h-[260px]">
+            <canvas id="scanBarChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Donut Chart -->
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm reveal">
+          <div class="mb-6">
+            <h3 class="text-base font-semibold text-gray-900">點數使用狀況</h3>
+            <p class="text-xs text-gray-400 mt-0.5">總購買 50 點</p>
+          </div>
+          <div class="h-[200px] flex items-center justify-center">
+            <canvas id="pointsDonutChart"></canvas>
+          </div>
+          <div class="flex items-center justify-center gap-6 mt-4">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-action"></span>
+              <span class="text-xs text-gray-500">已使用 <span class="font-semibold text-gray-700">8</span></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-gray-200"></span>
+              <span class="text-xs text-gray-500">剩餘 <span class="font-semibold text-gray-700">42</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Uploads Table -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm reveal">
+        <div class="flex items-center justify-between px-6 py-5">
+          <div>
+            <h3 class="text-base font-semibold text-gray-900">近期上傳紀錄</h3>
+            <p class="text-xs text-gray-400 mt-0.5">最近 5 筆上傳記錄</p>
+          </div>
+          <a href="#" class="text-xs text-action hover:text-action-hover font-medium transition-colors">查看全部 &rarr;</a>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>上傳編號</th>
+                <th>檔案名稱</th>
+                <th>上傳時間</th>
+                <th>狀態</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-mono text-xs text-gray-500">UP-20260210</td>
+                <td class="font-medium text-gray-900">payment-module.zip</td>
+                <td class="text-gray-500 text-sm">2026/02/10 14:30</td>
+                <td><span class="badge badge-completed">已完成</span></td>
+                <td>
+                  <button class="text-xs text-action hover:text-action-hover font-medium px-3 py-1.5 bg-blue-50 rounded-lg transition-colors" onclick="openModal('downloadModal')">下載報告</button>
+                </td>
+              </tr>
+              <tr>
+                <td class="font-mono text-xs text-gray-500">UP-20260209</td>
+                <td class="font-medium text-gray-900">auth-service.tar.gz</td>
+                <td class="text-gray-500 text-sm">2026/02/09 09:15</td>
+                <td><span class="badge badge-scanning animate-pulse">掃描中</span></td>
+                <td><span class="text-xs text-gray-400">-</span></td>
+              </tr>
+              <tr>
+                <td class="font-mono text-xs text-gray-500">UP-20260208</td>
+                <td class="font-medium text-gray-900">api-gateway.zip</td>
+                <td class="text-gray-500 text-sm">2026/02/08 16:45</td>
+                <td><span class="badge badge-completed">已完成</span></td>
+                <td>
+                  <button class="text-xs text-action hover:text-action-hover font-medium px-3 py-1.5 bg-blue-50 rounded-lg transition-colors" onclick="openModal('downloadModal')">下載報告</button>
+                </td>
+              </tr>
+              <tr>
+                <td class="font-mono text-xs text-gray-500">UP-20260207</td>
+                <td class="font-medium text-gray-900">user-portal.zip</td>
+                <td class="text-gray-500 text-sm">2026/02/07 11:20</td>
+                <td><span class="badge badge-failed">失敗</span></td>
+                <td>
+                  <button class="text-xs text-danger hover:text-red-700 font-medium px-3 py-1.5 bg-red-50 rounded-lg transition-colors" onclick="showToast('正在重新上傳...', 'info')">重新上傳</button>
+                </td>
+              </tr>
+              <tr>
+                <td class="font-mono text-xs text-gray-500">UP-20260205</td>
+                <td class="font-medium text-gray-900">mobile-app.zip</td>
+                <td class="text-gray-500 text-sm">2026/02/05 08:00</td>
+                <td><span class="badge badge-completed">已完成</span></td>
+                <td>
+                  <button class="text-xs text-action hover:text-action-hover font-medium px-3 py-1.5 bg-blue-50 rounded-lg transition-colors" onclick="openModal('downloadModal')">下載報告</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Download Format Modal -->
+  <div id="downloadModal" class="modal-overlay fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
+    <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-sm mx-4 p-6">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-base font-semibold text-gray-900">下載報告</h3>
+        <button onclick="closeModal('downloadModal')" class="text-gray-400 hover:text-gray-600 transition-colors">
+          <span class="material-icons-outlined text-xl">close</span>
+        </button>
+      </div>
+      <p class="text-sm text-gray-500 mb-4">請選擇下載格式</p>
+      <div class="space-y-2 mb-6">
+        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+          <input type="radio" name="format" value="html" checked class="accent-action">
+          <span class="material-icons-outlined text-gray-400 text-lg">code</span>
+          <span class="text-sm font-medium text-gray-700">HTML 格式</span>
+        </label>
+        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+          <input type="radio" name="format" value="pdf" class="accent-action">
+          <span class="material-icons-outlined text-gray-400 text-lg">picture_as_pdf</span>
+          <span class="text-sm font-medium text-gray-700">PDF 格式</span>
+        </label>
+      </div>
+      <button onclick="closeModal('downloadModal'); showToast('報告下載已開始', 'success')" class="w-full bg-action hover:bg-action-hover text-white font-medium py-2.5 rounded-xl transition-colors text-sm">
+        下載
+      </button>
+    </div>
+  </div>
+
+  <!-- Floating Upload Button -->
+  <a href="upload.html" class="fixed bottom-8 right-8 z-30 bg-action hover:bg-action-hover text-white px-5 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 group">
+    <span class="material-icons-outlined text-lg">cloud_upload</span>
+    <span class="text-sm font-medium">上傳程式碼</span>
+  </a>
+
+  <script src="assets/js/common.js"></script>
+  <script>
+    // Mini Donut in stat card
+    const miniCtx = document.getElementById('miniDonut');
+    if (miniCtx) {
+      new Chart(miniCtx, {
+        type: 'doughnut',
+        data: {
+          datasets: [{
+            data: [3, 2],
+            backgroundColor: ['#008CE3', '#E5E7EB'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          cutout: '65%',
+          responsive: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: false } }
+        }
+      });
+    }
+
+    // Bar Chart - Monthly Scans
+    const barCtx = document.getElementById('scanBarChart');
+    if (barCtx) {
+      new Chart(barCtx, {
+        type: 'bar',
+        data: {
+          labels: ['9月', '10月', '11月', '12月', '1月', '2月'],
+          datasets: [{
+            label: '掃描數量',
+            data: [18, 24, 22, 31, 28, 12],
+            backgroundColor: '#008CE3',
+            borderRadius: 6,
+            borderSkipped: false,
+            barPercentage: 0.5,
+            categoryPercentage: 0.7
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1F2937',
+              titleFont: { family: 'Inter', size: 12 },
+              bodyFont: { family: 'Inter', size: 12 },
+              padding: 10,
+              cornerRadius: 8,
+              displayColors: false,
+              callbacks: {
+                label: (ctx) => `${ctx.parsed.y} 次掃描`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { font: { family: 'Inter', size: 12 }, color: '#9CA3AF' },
+              border: { display: false }
+            },
+            y: {
+              grid: { color: '#F3F4F6' },
+              ticks: { font: { family: 'Inter', size: 12 }, color: '#9CA3AF', stepSize: 10 },
+              border: { display: false },
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    // Donut Chart - Points Usage
+    const donutCtx = document.getElementById('pointsDonutChart');
+    if (donutCtx) {
+      new Chart(donutCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['已使用', '剩餘'],
+          datasets: [{
+            data: [8, 42],
+            backgroundColor: ['#008CE3', '#E5E7EB'],
+            borderWidth: 0,
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '72%',
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1F2937',
+              titleFont: { family: 'Inter', size: 12 },
+              bodyFont: { family: 'Inter', size: 12 },
+              padding: 10,
+              cornerRadius: 8,
+              callbacks: {
+                label: (ctx) => `${ctx.label}: ${ctx.parsed} 點`
+              }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

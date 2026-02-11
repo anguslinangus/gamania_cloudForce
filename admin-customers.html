@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>客戶管理 - StormIQ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Material+Icons+Outlined&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#81C0EA',
+            secondary: '#0242C7',
+            action: '#008CE3',
+            'action-hover': '#0078C7',
+            cyan: '#00B2E3',
+            success: '#198754',
+            warning: '#FFC107',
+            danger: '#DC3545',
+            'body-bg': '#F8F9FA',
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+          },
+          borderRadius: {
+            '2xl': '1rem',
+            '3xl': '1.25rem',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-body-bg font-sans text-gray-800 flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed left-0 top-0 h-full w-[260px] bg-white border-r border-gray-200 z-40 flex flex-col">
+    <!-- Logo -->
+    <div class="px-6 py-6 border-b border-gray-100">
+      <div class="flex items-center gap-2">
+        <span class="material-icons-outlined text-3xl text-action">shield</span>
+        <div>
+          <h1 class="text-xl font-bold gradient-text">StormIQ</h1>
+          <p class="text-[11px] text-gray-400 font-medium tracking-wide">管理後台</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 py-4 overflow-y-auto">
+      <a href="admin-dashboard.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">analytics</span>
+        <span>管理儀表板</span>
+      </a>
+      <a href="admin-customers.html" class="nav-item active">
+        <span class="material-icons-outlined text-xl">business</span>
+        <span>客戶管理</span>
+      </a>
+      <a href="admin-approval.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">fact_check</span>
+        <span>審核管理</span>
+        <span class="ml-auto bg-danger text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">5</span>
+      </a>
+      <a href="admin-points.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">toll</span>
+        <span>點數管理</span>
+      </a>
+      <a href="admin-perm-frontend.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">manage_accounts</span>
+        <span>前台權限管理</span>
+      </a>
+      <a href="admin-perm-backend.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">shield</span>
+        <span>後台權限管理</span>
+      </a>
+    </nav>
+
+    <!-- Bottom -->
+    <div class="border-t border-gray-100 p-4">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-9 h-9 rounded-full bg-action/10 flex items-center justify-center">
+          <span class="material-icons-outlined text-action text-lg">person</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold text-gray-800 truncate">Admin Chen</p>
+          <p class="text-[11px] text-gray-400">業務 · PDM</p>
+        </div>
+      </div>
+      <!-- Switch to Frontend -->
+      <a href="dashboard.html" class="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-400 hover:text-action transition-colors mb-1">
+        <span class="material-icons-outlined text-lg">swap_horiz</span>
+        切換至客戶端
+      </a>
+      <a href="login.html" class="flex items-center gap-2 text-sm text-gray-400 hover:text-danger transition-colors px-1">
+        <span class="material-icons-outlined text-lg">logout</span>
+        <span>登出</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div id="main-content" class="ml-[260px] flex-1 flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-30">
+      <div class="flex items-center gap-2 text-sm">
+        <span class="text-gray-400">StormIQ</span>
+        <span class="text-gray-300">/</span>
+        <span class="text-gray-800 font-medium">客戶管理</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <button class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+          <span class="material-icons-outlined text-xl">notifications</span>
+          <span class="absolute -top-0.5 -right-0.5 bg-danger text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">3</span>
+        </button>
+        <div class="w-8 h-8 rounded-full bg-action/10 flex items-center justify-center">
+          <span class="material-icons-outlined text-action text-sm">person</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="flex-1 p-8">
+      <!-- Page Title + Action -->
+      <div class="flex items-center justify-between mb-8 reveal">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900">客戶管理</h2>
+          <p class="text-sm text-gray-500 mt-1">管理所有客戶公司、帳號與點數資訊</p>
+        </div>
+        <button onclick="openModal('addCustomerModal')" class="flex items-center gap-2 px-5 py-2.5 bg-action text-white text-sm font-medium rounded-lg hover:bg-action-hover transition-colors shadow-sm">
+          <span class="material-icons-outlined text-lg">add</span>
+          新增客戶
+        </button>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-6 reveal">
+        <div class="flex flex-wrap items-center gap-4">
+          <div class="flex-1 min-w-[240px] relative">
+            <span class="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">search</span>
+            <input type="text" placeholder="搜尋公司名稱、編號或負責業務..." class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:bg-white" id="searchInput" oninput="filterTable()">
+          </div>
+          <select class="border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-600 bg-gray-50" id="statusFilter" onchange="filterTable()">
+            <option value="">全部狀態</option>
+            <option value="active">使用中</option>
+            <option value="inactive">已停用</option>
+            <option value="trial">試用中</option>
+          </select>
+          <select class="border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-600 bg-gray-50" id="ownerFilter" onchange="filterTable()">
+            <option value="">全部業務</option>
+            <option value="陳業務">陳業務</option>
+            <option value="林業務">林業務</option>
+            <option value="王業務">王業務</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Company Table -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm reveal">
+        <div class="p-6 overflow-x-auto">
+          <table class="data-table" id="companyTable">
+            <thead>
+              <tr>
+                <th>公司編號</th>
+                <th>公司名稱</th>
+                <th>帳號數</th>
+                <th>已購點數</th>
+                <th>剩餘點數</th>
+                <th>負責業務</th>
+                <th>狀態</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="cursor-pointer" onclick="openDetail('C001')" data-status="active" data-owner="陳業務">
+                <td class="text-gray-500 font-mono text-xs">C001</td>
+                <td class="font-medium text-gray-800">毅聲科技股份有限公司</td>
+                <td>8</td>
+                <td>500</td>
+                <td><span class="font-semibold text-gray-900">42</span></td>
+                <td>陳業務</td>
+                <td><span class="badge badge-active">使用中</span></td>
+                <td>
+                  <button onclick="event.stopPropagation(); openDetail('C001')" class="text-action hover:text-action-hover text-sm font-medium transition-colors">檢視</button>
+                </td>
+              </tr>
+              <tr class="cursor-pointer" onclick="openDetail('C002')" data-status="active" data-owner="林業務">
+                <td class="text-gray-500 font-mono text-xs">C002</td>
+                <td class="font-medium text-gray-800">天鴻資訊有限公司</td>
+                <td>12</td>
+                <td>800</td>
+                <td><span class="font-semibold text-gray-900">156</span></td>
+                <td>林業務</td>
+                <td><span class="badge badge-active">使用中</span></td>
+                <td>
+                  <button onclick="event.stopPropagation(); openDetail('C002')" class="text-action hover:text-action-hover text-sm font-medium transition-colors">檢視</button>
+                </td>
+              </tr>
+              <tr class="cursor-pointer" onclick="openDetail('C003')" data-status="active" data-owner="陳業務">
+                <td class="text-gray-500 font-mono text-xs">C003</td>
+                <td class="font-medium text-gray-800">創意數位科技股份有限公司</td>
+                <td>6</td>
+                <td>300</td>
+                <td><span class="font-semibold text-gray-900">88</span></td>
+                <td>陳業務</td>
+                <td><span class="badge badge-active">使用中</span></td>
+                <td>
+                  <button onclick="event.stopPropagation(); openDetail('C003')" class="text-action hover:text-action-hover text-sm font-medium transition-colors">檢視</button>
+                </td>
+              </tr>
+              <tr class="cursor-pointer" onclick="openDetail('C004')" data-status="active" data-owner="王業務">
+                <td class="text-gray-500 font-mono text-xs">C004</td>
+                <td class="font-medium text-gray-800">聯合軟體開發有限公司</td>
+                <td>15</td>
+                <td>1000</td>
+                <td><span class="font-semibold text-gray-900">324</span></td>
+                <td>王業務</td>
+                <td><span class="badge badge-active">使用中</span></td>
+                <td>
+                  <button onclick="event.stopPropagation(); openDetail('C004')" class="text-action hover:text-action-hover text-sm font-medium transition-colors">檢視</button>
+                </td>
+              </tr>
+              <tr class="cursor-pointer" onclick="openDetail('C005')" data-status="trial" data-owner="陳業務">
+                <td class="text-gray-500 font-mono text-xs">C005</td>
+                <td class="font-medium text-gray-800">宏達數位科技有限公司</td>
+                <td>3</td>
+                <td>50</td>
+                <td><span class="font-semibold text-warning">12</span></td>
+                <td>陳業務</td>
+                <td><span class="badge badge-pending">試用中</span></td>
+                <td>
+                  <button onclick="event.stopPropagation(); openDetail('C005')" class="text-action hover:text-action-hover text-sm font-medium transition-colors">檢視</button>
+                </td>
+              </tr>
+              <tr class="cursor-pointer" onclick="openDetail('C006')" data-status="active" data-owner="林業務">
+                <td class="text-gray-500 font-mono text-xs">C006</td>
+                <td class="font-medium text-gray-800">旭展科技股份有限公司</td>
+                <td>10</td>
+                <td>600</td>
+                <td><span class="font-semibold text-gray-900">203</span></td>
+                <td>林業務</td>
+                <td><span class="badge badge-active">使用中</span></td>
+                <td>
+                  <button onclick="event.stopPropagation(); openDetail('C006')" class="text-action hover:text-action-hover text-sm font-medium transition-colors">檢視</button>
+                </td>
+              </tr>
+              <tr class="cursor-pointer" onclick="openDetail('C007')" data-status="inactive" data-owner="王業務">
+                <td class="text-gray-500 font-mono text-xs">C007</td>
+                <td class="font-medium text-gray-800">鼎新電腦股份有限公司</td>
+                <td>5</td>
+                <td>200</td>
+                <td><span class="font-semibold text-gray-400">0</span></td>
+                <td>王業務</td>
+                <td><span class="badge badge-uploaded">已停用</span></td>
+                <td>
+                  <button onclick="event.stopPropagation(); openDetail('C007')" class="text-action hover:text-action-hover text-sm font-medium transition-colors">檢視</button>
+                </td>
+              </tr>
+              <tr class="cursor-pointer" onclick="openDetail('C008')" data-status="active" data-owner="林業務">
+                <td class="text-gray-500 font-mono text-xs">C008</td>
+                <td class="font-medium text-gray-800">雲端智慧科技有限公司</td>
+                <td>7</td>
+                <td>400</td>
+                <td><span class="font-semibold text-gray-900">175</span></td>
+                <td>林業務</td>
+                <td><span class="badge badge-active">使用中</span></td>
+                <td>
+                  <button onclick="event.stopPropagation(); openDetail('C008')" class="text-action hover:text-action-hover text-sm font-medium transition-colors">檢視</button>
+                </td>
+              </tr>
+              <tr class="cursor-pointer" onclick="openDetail('C009')" data-status="active" data-owner="陳業務">
+                <td class="text-gray-500 font-mono text-xs">C009</td>
+                <td class="font-medium text-gray-800">瑞昱半導體股份有限公司</td>
+                <td>20</td>
+                <td>1500</td>
+                <td><span class="font-semibold text-gray-900">687</span></td>
+                <td>陳業務</td>
+                <td><span class="badge badge-active">使用中</span></td>
+                <td>
+                  <button onclick="event.stopPropagation(); openDetail('C009')" class="text-action hover:text-action-hover text-sm font-medium transition-colors">檢視</button>
+                </td>
+              </tr>
+              <tr class="cursor-pointer" onclick="openDetail('C010')" data-status="trial" data-owner="王業務">
+                <td class="text-gray-500 font-mono text-xs">C010</td>
+                <td class="font-medium text-gray-800">新光保全資訊服務</td>
+                <td>4</td>
+                <td>100</td>
+                <td><span class="font-semibold text-warning">25</span></td>
+                <td>王業務</td>
+                <td><span class="badge badge-pending">試用中</span></td>
+                <td>
+                  <button onclick="event.stopPropagation(); openDetail('C010')" class="text-action hover:text-action-hover text-sm font-medium transition-colors">檢視</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Pagination -->
+        <div class="flex items-center justify-between px-6 py-4 border-t border-gray-100">
+          <span class="text-sm text-gray-500">顯示 1-10，共 38 筆</span>
+          <div class="flex items-center gap-1">
+            <button class="px-3 py-1.5 text-sm text-gray-400 rounded-lg" disabled>上一頁</button>
+            <button class="px-3 py-1.5 text-sm bg-action text-white rounded-lg">1</button>
+            <button class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">2</button>
+            <button class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">3</button>
+            <button class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">4</button>
+            <button class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">下一頁</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Detail Slide-in Panel -->
+  <div id="detailOverlay" class="fixed inset-0 bg-black/30 z-50 hidden" onclick="closeDetail()"></div>
+  <div id="detailPanel" class="detail-panel fixed top-0 right-0 h-full w-[560px] bg-white shadow-2xl z-50 overflow-y-auto">
+    <!-- Panel Header -->
+    <div class="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between z-10">
+      <h3 class="text-lg font-semibold text-gray-900">客戶詳情</h3>
+      <button onclick="closeDetail()" class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+        <span class="material-icons-outlined">close</span>
+      </button>
+    </div>
+
+    <!-- Panel Content -->
+    <div class="p-6">
+      <!-- Company Info Card -->
+      <div class="bg-gray-50 rounded-xl p-5 mb-6">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-xl bg-action/10 flex items-center justify-center flex-shrink-0">
+            <span class="material-icons-outlined text-action text-2xl">business</span>
+          </div>
+          <div class="flex-1">
+            <h4 class="text-lg font-bold text-gray-900" id="detailCompanyName">毅聲科技股份有限公司</h4>
+            <p class="text-xs text-gray-400 mt-0.5 font-mono" id="detailCompanyId">C001</p>
+          </div>
+          <span class="badge badge-active" id="detailStatus">使用中</span>
+        </div>
+        <div class="grid grid-cols-2 gap-4 mt-5">
+          <div>
+            <p class="text-xs text-gray-400 mb-1">聯絡人</p>
+            <p class="text-sm font-medium text-gray-800" id="detailContact">張經理</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-400 mb-1">聯絡電話</p>
+            <p class="text-sm font-medium text-gray-800" id="detailPhone">02-2345-6789</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-400 mb-1">電子郵件</p>
+            <p class="text-sm font-medium text-gray-800" id="detailEmail">contact@yisheng.com.tw</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-400 mb-1">負責業務</p>
+            <p class="text-sm font-medium text-gray-800" id="detailOwner">陳業務</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-400 mb-1">建立日期</p>
+            <p class="text-sm font-medium text-gray-800" id="detailDate">2025/06/15</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-400 mb-1">合約方案</p>
+            <p class="text-sm font-medium text-gray-800" id="detailPlan">企業版</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Points Summary -->
+      <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="bg-white border border-gray-100 rounded-xl p-4 text-center">
+          <p class="text-xs text-gray-400 mb-1">已購點數</p>
+          <p class="text-xl font-bold text-gray-900" id="detailTotalPoints">500</p>
+        </div>
+        <div class="bg-white border border-gray-100 rounded-xl p-4 text-center">
+          <p class="text-xs text-gray-400 mb-1">已使用</p>
+          <p class="text-xl font-bold text-action" id="detailUsedPoints">458</p>
+        </div>
+        <div class="bg-white border border-gray-100 rounded-xl p-4 text-center">
+          <p class="text-xs text-gray-400 mb-1">剩餘點數</p>
+          <p class="text-xl font-bold text-success" id="detailRemainPoints">42</p>
+        </div>
+      </div>
+
+      <!-- Accounts Table -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <h4 class="text-sm font-semibold text-gray-800">公司帳號（<span id="detailAccountCount">4</span> 人）</h4>
+          <button class="text-xs text-action font-medium hover:text-action-hover transition-colors">新增帳號</button>
+        </div>
+        <div class="border border-gray-100 rounded-xl overflow-hidden">
+          <table class="data-table" id="detailAccountsTable">
+            <thead>
+              <tr>
+                <th>姓名</th>
+                <th>Email</th>
+                <th>角色</th>
+                <th>最後登入</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-medium text-gray-800">Roger Chang</td>
+                <td class="text-gray-500 text-xs">roger@yisheng.com.tw</td>
+                <td><span class="badge badge-scanning">上傳員</span></td>
+                <td class="text-gray-400 text-xs">2026/02/10</td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-800">林小華</td>
+                <td class="text-gray-500 text-xs">lin.xh@yisheng.com.tw</td>
+                <td><span class="badge badge-uploaded">檢視員</span></td>
+                <td class="text-gray-400 text-xs">2026/02/09</td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-800">張美玲</td>
+                <td class="text-gray-500 text-xs">zhang.ml@yisheng.com.tw</td>
+                <td><span class="badge badge-active">管理員</span></td>
+                <td class="text-gray-400 text-xs">2026/02/10</td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-800">王大明</td>
+                <td class="text-gray-500 text-xs">wang.dm@yisheng.com.tw</td>
+                <td><span class="badge badge-uploaded">檢視員</span></td>
+                <td class="text-gray-400 text-xs">2026/02/07</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Points History -->
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <h4 class="text-sm font-semibold text-gray-800">點數異動紀錄</h4>
+          <button class="text-xs text-action font-medium hover:text-action-hover transition-colors">加值點數</button>
+        </div>
+        <div class="border border-gray-100 rounded-xl overflow-hidden">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>日期</th>
+                <th>類型</th>
+                <th>數量</th>
+                <th>餘額</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-gray-400 text-xs">2026/02/10</td>
+                <td><span class="text-danger text-xs font-medium">扣除</span></td>
+                <td class="text-danger text-sm">-1</td>
+                <td class="font-medium">42</td>
+              </tr>
+              <tr>
+                <td class="text-gray-400 text-xs">2026/02/09</td>
+                <td><span class="text-danger text-xs font-medium">扣除</span></td>
+                <td class="text-danger text-sm">-1</td>
+                <td class="font-medium">43</td>
+              </tr>
+              <tr>
+                <td class="text-gray-400 text-xs">2026/02/08</td>
+                <td><span class="text-danger text-xs font-medium">扣除</span></td>
+                <td class="text-danger text-sm">-1</td>
+                <td class="font-medium">44</td>
+              </tr>
+              <tr>
+                <td class="text-gray-400 text-xs">2026/02/05</td>
+                <td><span class="text-success text-xs font-medium">購買</span></td>
+                <td class="text-success text-sm">+100</td>
+                <td class="font-medium">45</td>
+              </tr>
+              <tr>
+                <td class="text-gray-400 text-xs">2026/01/28</td>
+                <td><span class="text-danger text-xs font-medium">扣除</span></td>
+                <td class="text-danger text-sm">-1</td>
+                <td class="font-medium">-55</td>
+              </tr>
+              <tr>
+                <td class="text-gray-400 text-xs">2026/01/15</td>
+                <td><span class="text-action text-xs font-medium">退還</span></td>
+                <td class="text-action text-sm">+1</td>
+                <td class="font-medium">-54</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Customer Modal -->
+  <div id="addCustomerModal" class="modal-overlay fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
+    <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="p-6 border-b border-gray-100">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-900">新增客戶</h3>
+          <button onclick="closeModal('addCustomerModal')" class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+            <span class="material-icons-outlined text-xl">close</span>
+          </button>
+        </div>
+      </div>
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">公司名稱 <span class="text-danger">*</span></label>
+          <input type="text" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm bg-gray-50 focus:bg-white" placeholder="例：台灣科技股份有限公司">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">聯絡人 <span class="text-danger">*</span></label>
+            <input type="text" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm bg-gray-50 focus:bg-white" placeholder="姓名">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">聯絡電話 <span class="text-danger">*</span></label>
+            <input type="tel" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm bg-gray-50 focus:bg-white" placeholder="02-XXXX-XXXX">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">電子郵件 <span class="text-danger">*</span></label>
+          <input type="email" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm bg-gray-50 focus:bg-white" placeholder="contact@company.com.tw">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">合約方案</label>
+            <select class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm bg-gray-50 focus:bg-white">
+              <option>試用版</option>
+              <option>基礎版</option>
+              <option selected>企業版</option>
+              <option>旗艦版</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">初始點數</label>
+            <input type="number" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm bg-gray-50 focus:bg-white" placeholder="100" value="100">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">備註</label>
+          <textarea rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm bg-gray-50 focus:bg-white resize-none" placeholder="其他說明..."></textarea>
+        </div>
+        <div class="bg-yellow-50 border border-yellow-100 rounded-lg p-3 flex items-start gap-2">
+          <span class="material-icons-outlined text-yellow-600 text-lg mt-0.5">info</span>
+          <p class="text-xs text-yellow-700">新客戶申請將送交 PDM 審核，核准後方可啟用。</p>
+        </div>
+      </div>
+      <div class="p-6 border-t border-gray-100 flex items-center justify-end gap-3">
+        <button onclick="closeModal('addCustomerModal')" class="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors">取消</button>
+        <button onclick="submitNewCustomer()" class="px-6 py-2.5 text-sm font-medium bg-action text-white rounded-lg hover:bg-action-hover transition-colors">提交申請</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/common.js"></script>
+  <script>
+    // Company detail data
+    const companyData = {
+      'C001': { name: '毅聲科技股份有限公司', id: 'C001', status: '使用中', statusClass: 'badge-active', contact: '張經理', phone: '02-2345-6789', email: 'contact@yisheng.com.tw', owner: '陳業務', date: '2025/06/15', plan: '企業版', total: 500, used: 458, remain: 42, accounts: 4 },
+      'C002': { name: '天鴻資訊有限公司', id: 'C002', status: '使用中', statusClass: 'badge-active', contact: '李副總', phone: '02-8765-4321', email: 'info@tianhong.com.tw', owner: '林業務', date: '2025/03/20', plan: '旗艦版', total: 800, used: 644, remain: 156, accounts: 12 },
+      'C003': { name: '創意數位科技股份有限公司', id: 'C003', status: '使用中', statusClass: 'badge-active', contact: '吳總監', phone: '02-3456-7890', email: 'admin@creative-digital.tw', owner: '陳業務', date: '2025/08/01', plan: '企業版', total: 300, used: 212, remain: 88, accounts: 6 },
+      'C004': { name: '聯合軟體開發有限公司', id: 'C004', status: '使用中', statusClass: 'badge-active', contact: '趙經理', phone: '03-1234-5678', email: 'contact@unitedsoft.com.tw', owner: '王業務', date: '2025/01/10', plan: '旗艦版', total: 1000, used: 676, remain: 324, accounts: 15 },
+      'C005': { name: '宏達數位科技有限公司', id: 'C005', status: '試用中', statusClass: 'badge-pending', contact: '周主任', phone: '02-9876-5432', email: 'it@hongda.com.tw', owner: '陳業務', date: '2026/01/15', plan: '試用版', total: 50, used: 38, remain: 12, accounts: 3 },
+      'C006': { name: '旭展科技股份有限公司', id: 'C006', status: '使用中', statusClass: 'badge-active', contact: '孫協理', phone: '02-5678-1234', email: 'service@xuzan.com.tw', owner: '林業務', date: '2025/05/22', plan: '企業版', total: 600, used: 397, remain: 203, accounts: 10 },
+      'C007': { name: '鼎新電腦股份有限公司', id: 'C007', status: '已停用', statusClass: 'badge-uploaded', contact: '何經理', phone: '02-4567-8901', email: 'it@digiwin.com.tw', owner: '王業務', date: '2024/11/30', plan: '基礎版', total: 200, used: 200, remain: 0, accounts: 5 },
+      'C008': { name: '雲端智慧科技有限公司', id: 'C008', status: '使用中', statusClass: 'badge-active', contact: '鄭總經理', phone: '02-6789-0123', email: 'hello@cloudsmart.tw', owner: '林業務', date: '2025/09/10', plan: '企業版', total: 400, used: 225, remain: 175, accounts: 7 },
+      'C009': { name: '瑞昱半導體股份有限公司', id: 'C009', status: '使用中', statusClass: 'badge-active', contact: '黃總監', phone: '03-5678-9012', email: 'security@realtek.com.tw', owner: '陳業務', date: '2025/02/01', plan: '旗艦版', total: 1500, used: 813, remain: 687, accounts: 20 },
+      'C010': { name: '新光保全資訊服務', id: 'C010', status: '試用中', statusClass: 'badge-pending', contact: '蔡主管', phone: '02-7890-1234', email: 'it@skis.com.tw', owner: '王業務', date: '2026/01/28', plan: '試用版', total: 100, used: 75, remain: 25, accounts: 4 },
+    };
+
+    function openDetail(companyId) {
+      const data = companyData[companyId];
+      if (!data) return;
+
+      document.getElementById('detailCompanyName').textContent = data.name;
+      document.getElementById('detailCompanyId').textContent = data.id;
+      document.getElementById('detailStatus').textContent = data.status;
+      document.getElementById('detailStatus').className = 'badge ' + data.statusClass;
+      document.getElementById('detailContact').textContent = data.contact;
+      document.getElementById('detailPhone').textContent = data.phone;
+      document.getElementById('detailEmail').textContent = data.email;
+      document.getElementById('detailOwner').textContent = data.owner;
+      document.getElementById('detailDate').textContent = data.date;
+      document.getElementById('detailPlan').textContent = data.plan;
+      document.getElementById('detailTotalPoints').textContent = data.total;
+      document.getElementById('detailUsedPoints').textContent = data.used;
+      document.getElementById('detailRemainPoints').textContent = data.remain;
+      document.getElementById('detailAccountCount').textContent = data.accounts;
+
+      document.getElementById('detailOverlay').classList.remove('hidden');
+      document.getElementById('detailPanel').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDetail() {
+      document.getElementById('detailPanel').classList.remove('open');
+      document.getElementById('detailOverlay').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function filterTable() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const status = document.getElementById('statusFilter').value;
+      const owner = document.getElementById('ownerFilter').value;
+      const rows = document.querySelectorAll('#companyTable tbody tr');
+
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const rowStatus = row.dataset.status;
+        const rowOwner = row.dataset.owner;
+
+        const matchSearch = !search || text.includes(search);
+        const matchStatus = !status || rowStatus === status;
+        const matchOwner = !owner || rowOwner === owner;
+
+        row.style.display = (matchSearch && matchStatus && matchOwner) ? '' : 'none';
+      });
+    }
+
+    function submitNewCustomer() {
+      closeModal('addCustomerModal');
+      showToast('新客戶申請已送出，等待 PDM 審核', 'success');
+    }
+  </script>
+</body>
+</html>

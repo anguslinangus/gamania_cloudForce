@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>審核管理 - StormIQ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Material+Icons+Outlined&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#81C0EA',
+            secondary: '#0242C7',
+            action: '#008CE3',
+            'action-hover': '#0078C7',
+            cyan: '#00B2E3',
+            success: '#198754',
+            warning: '#FFC107',
+            danger: '#DC3545',
+            'body-bg': '#F8F9FA',
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+          },
+          borderRadius: {
+            '2xl': '1rem',
+            '3xl': '1.25rem',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-body-bg font-sans text-gray-800 flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed left-0 top-0 h-full w-[260px] bg-white border-r border-gray-200 z-40 flex flex-col">
+    <!-- Logo -->
+    <div class="px-6 py-6 border-b border-gray-100">
+      <div class="flex items-center gap-2">
+        <span class="material-icons-outlined text-3xl text-action">shield</span>
+        <div>
+          <h1 class="text-xl font-bold gradient-text">StormIQ</h1>
+          <p class="text-[11px] text-gray-400 font-medium tracking-wide">管理後台</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 py-4 overflow-y-auto">
+      <a href="admin-dashboard.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">analytics</span>
+        <span>管理儀表板</span>
+      </a>
+      <a href="admin-customers.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">business</span>
+        <span>客戶管理</span>
+      </a>
+      <a href="admin-approval.html" class="nav-item active">
+        <span class="material-icons-outlined text-xl">fact_check</span>
+        <span>審核管理</span>
+        <span class="ml-auto bg-danger text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">5</span>
+      </a>
+      <a href="admin-points.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">toll</span>
+        <span>點數管理</span>
+      </a>
+      <a href="admin-perm-frontend.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">manage_accounts</span>
+        <span>前台權限管理</span>
+      </a>
+      <a href="admin-perm-backend.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">shield</span>
+        <span>後台權限管理</span>
+      </a>
+    </nav>
+
+    <!-- Bottom -->
+    <div class="border-t border-gray-100 p-4">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-9 h-9 rounded-full bg-action/10 flex items-center justify-center">
+          <span class="material-icons-outlined text-action text-lg">person</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold text-gray-800 truncate">Admin Chen</p>
+          <p class="text-[11px] text-gray-400">業務 · PDM</p>
+        </div>
+      </div>
+      <!-- Switch to Frontend -->
+      <a href="dashboard.html" class="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-400 hover:text-action transition-colors mb-1">
+        <span class="material-icons-outlined text-lg">swap_horiz</span>
+        切換至客戶端
+      </a>
+      <a href="login.html" class="flex items-center gap-2 text-sm text-gray-400 hover:text-danger transition-colors px-1">
+        <span class="material-icons-outlined text-lg">logout</span>
+        <span>登出</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div id="main-content" class="ml-[260px] flex-1 flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-30">
+      <div class="flex items-center gap-2 text-sm">
+        <span class="text-gray-400">StormIQ</span>
+        <span class="text-gray-300">/</span>
+        <span class="text-gray-800 font-medium">審核管理</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <button class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+          <span class="material-icons-outlined text-xl">notifications</span>
+          <span class="absolute -top-0.5 -right-0.5 bg-danger text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">3</span>
+        </button>
+        <div class="w-8 h-8 rounded-full bg-action/10 flex items-center justify-center">
+          <span class="material-icons-outlined text-action text-sm">person</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="flex-1 p-8">
+      <!-- Page Title -->
+      <div class="mb-8 reveal">
+        <h2 class="text-2xl font-bold text-gray-900">審核管理</h2>
+        <p class="text-sm text-gray-500 mt-1">PDM 審核中心 — 管理所有待審核、已核准及已駁回的申請項目</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex items-center gap-1 border-b border-gray-200 mb-8 reveal">
+        <button class="tab-btn active" data-tab-group="approval" data-tab="tab-pending" onclick="switchTab('approval','tab-pending')">
+          待審核
+          <span class="ml-1.5 bg-danger text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">5</span>
+        </button>
+        <button class="tab-btn" data-tab-group="approval" data-tab="tab-approved" onclick="switchTab('approval','tab-approved')">
+          已核准
+        </button>
+        <button class="tab-btn" data-tab-group="approval" data-tab="tab-rejected" onclick="switchTab('approval','tab-rejected')">
+          已駁回
+        </button>
+      </div>
+
+      <!-- Tab: Pending -->
+      <div id="tab-pending" class="tab-content active" data-tab-content="approval">
+        <div class="space-y-4">
+
+          <!-- Item 1 -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow reveal">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="badge badge-pending">新客戶申請</span>
+                  <span class="text-xs text-gray-400">AP-20260210-001</span>
+                </div>
+                <h4 class="text-base font-semibold text-gray-900 mb-1">宏達數位科技有限公司</h4>
+                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">person</span>
+                    <span>申請人：陳業務</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">calendar_today</span>
+                    <span>2026/02/10</span>
+                  </div>
+                </div>
+                <!-- Expandable Details -->
+                <div class="mt-4 bg-gray-50 rounded-xl p-4 text-sm text-gray-600">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div><span class="text-gray-400">聯絡人：</span>周主任</div>
+                    <div><span class="text-gray-400">電話：</span>02-9876-5432</div>
+                    <div><span class="text-gray-400">Email：</span>it@hongda.com.tw</div>
+                    <div><span class="text-gray-400">方案：</span>試用版（50 點）</div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 ml-6 flex-shrink-0">
+                <button onclick="openApproveModal('AP-20260210-001', '宏達數位科技', '新客戶申請')" class="px-4 py-2 text-sm font-medium bg-success text-white rounded-lg hover:bg-green-700 transition-colors">核准</button>
+                <button onclick="openRejectModal('AP-20260210-001', '宏達數位科技', '新客戶申請')" class="px-4 py-2 text-sm font-medium bg-white text-danger border border-danger/30 rounded-lg hover:bg-red-50 transition-colors">駁回</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow reveal">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="badge badge-scanning">點數加值</span>
+                  <span class="text-xs text-gray-400">AP-20260209-002</span>
+                </div>
+                <h4 class="text-base font-semibold text-gray-900 mb-1">毅聲科技股份有限公司</h4>
+                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">person</span>
+                    <span>申請人：林業務</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">calendar_today</span>
+                    <span>2026/02/09</span>
+                  </div>
+                </div>
+                <div class="mt-4 bg-gray-50 rounded-xl p-4 text-sm text-gray-600">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div><span class="text-gray-400">加值點數：</span><span class="font-semibold text-action">+200 點</span></div>
+                    <div><span class="text-gray-400">目前餘額：</span>42 點</div>
+                    <div class="col-span-2"><span class="text-gray-400">申請原因：</span>客戶掃描需求增加，點數不足</div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 ml-6 flex-shrink-0">
+                <button onclick="openApproveModal('AP-20260209-002', '毅聲科技', '點數加值')" class="px-4 py-2 text-sm font-medium bg-success text-white rounded-lg hover:bg-green-700 transition-colors">核准</button>
+                <button onclick="openRejectModal('AP-20260209-002', '毅聲科技', '點數加值')" class="px-4 py-2 text-sm font-medium bg-white text-danger border border-danger/30 rounded-lg hover:bg-red-50 transition-colors">駁回</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow reveal">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="badge badge-uploaded">帳號新增</span>
+                  <span class="text-xs text-gray-400">AP-20260208-003</span>
+                </div>
+                <h4 class="text-base font-semibold text-gray-900 mb-1">天鴻資訊有限公司</h4>
+                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">person</span>
+                    <span>申請人：王業務</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">calendar_today</span>
+                    <span>2026/02/08</span>
+                  </div>
+                </div>
+                <div class="mt-4 bg-gray-50 rounded-xl p-4 text-sm text-gray-600">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div><span class="text-gray-400">新帳號姓名：</span>王小明</div>
+                    <div><span class="text-gray-400">Email：</span>wang.xm@tianhong.com.tw</div>
+                    <div><span class="text-gray-400">角色：</span>程式碼上傳員</div>
+                    <div><span class="text-gray-400">目前帳號數：</span>12</div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 ml-6 flex-shrink-0">
+                <button onclick="openApproveModal('AP-20260208-003', '天鴻資訊', '帳號新增')" class="px-4 py-2 text-sm font-medium bg-success text-white rounded-lg hover:bg-green-700 transition-colors">核准</button>
+                <button onclick="openRejectModal('AP-20260208-003', '天鴻資訊', '帳號新增')" class="px-4 py-2 text-sm font-medium bg-white text-danger border border-danger/30 rounded-lg hover:bg-red-50 transition-colors">駁回</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow reveal">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="badge badge-pending">新客戶申請</span>
+                  <span class="text-xs text-gray-400">AP-20260207-004</span>
+                </div>
+                <h4 class="text-base font-semibold text-gray-900 mb-1">創意數位科技股份有限公司</h4>
+                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">person</span>
+                    <span>申請人：陳業務</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">calendar_today</span>
+                    <span>2026/02/07</span>
+                  </div>
+                </div>
+                <div class="mt-4 bg-gray-50 rounded-xl p-4 text-sm text-gray-600">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div><span class="text-gray-400">聯絡人：</span>吳總監</div>
+                    <div><span class="text-gray-400">電話：</span>02-3456-7890</div>
+                    <div><span class="text-gray-400">Email：</span>admin@creative-digital.tw</div>
+                    <div><span class="text-gray-400">方案：</span>企業版（300 點）</div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 ml-6 flex-shrink-0">
+                <button onclick="openApproveModal('AP-20260207-004', '創意數位', '新客戶申請')" class="px-4 py-2 text-sm font-medium bg-success text-white rounded-lg hover:bg-green-700 transition-colors">核准</button>
+                <button onclick="openRejectModal('AP-20260207-004', '創意數位', '新客戶申請')" class="px-4 py-2 text-sm font-medium bg-white text-danger border border-danger/30 rounded-lg hover:bg-red-50 transition-colors">駁回</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 5 -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow reveal">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="badge badge-scanning">資料修改</span>
+                  <span class="text-xs text-gray-400">AP-20260206-005</span>
+                </div>
+                <h4 class="text-base font-semibold text-gray-900 mb-1">聯合軟體開發有限公司</h4>
+                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">person</span>
+                    <span>申請人：林業務</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">calendar_today</span>
+                    <span>2026/02/06</span>
+                  </div>
+                </div>
+                <div class="mt-4 bg-gray-50 rounded-xl p-4 text-sm text-gray-600">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div><span class="text-gray-400">修改項目：</span>公司聯絡人資訊</div>
+                    <div><span class="text-gray-400">原聯絡人：</span>趙經理</div>
+                    <div><span class="text-gray-400">新聯絡人：</span>錢協理</div>
+                    <div><span class="text-gray-400">新電話：</span>03-2345-6789</div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 ml-6 flex-shrink-0">
+                <button onclick="openApproveModal('AP-20260206-005', '聯合軟體', '資料修改')" class="px-4 py-2 text-sm font-medium bg-success text-white rounded-lg hover:bg-green-700 transition-colors">核准</button>
+                <button onclick="openRejectModal('AP-20260206-005', '聯合軟體', '資料修改')" class="px-4 py-2 text-sm font-medium bg-white text-danger border border-danger/30 rounded-lg hover:bg-red-50 transition-colors">駁回</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Tab: Approved -->
+      <div id="tab-approved" class="tab-content" data-tab-content="approval">
+        <div class="space-y-4">
+
+          <!-- Approved Item 1 -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 reveal">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="badge badge-scanning">點數加值</span>
+                  <span class="badge badge-approved">已核准</span>
+                  <span class="text-xs text-gray-400">AP-20260203-006</span>
+                </div>
+                <h4 class="text-base font-semibold text-gray-900 mb-1">旭展科技股份有限公司</h4>
+                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">person</span>
+                    <span>申請人：林業務</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">calendar_today</span>
+                    <span>2026/02/03</span>
+                  </div>
+                </div>
+                <div class="mt-4 bg-green-50/50 rounded-xl p-4 text-sm text-gray-600">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div><span class="text-gray-400">加值點數：</span><span class="font-semibold text-success">+300 點</span></div>
+                    <div><span class="text-gray-400">加值後餘額：</span>503 點</div>
+                  </div>
+                  <div class="mt-3 pt-3 border-t border-green-100">
+                    <div class="flex items-center gap-4">
+                      <div><span class="text-gray-400">審核人：</span><span class="font-medium">Admin Chen</span></div>
+                      <div><span class="text-gray-400">審核日期：</span>2026/02/04</div>
+                    </div>
+                    <div class="mt-1"><span class="text-gray-400">備註：</span>同意加值，已確認付款資訊</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Approved Item 2 -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 reveal">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="badge badge-pending">新客戶申請</span>
+                  <span class="badge badge-approved">已核准</span>
+                  <span class="text-xs text-gray-400">AP-20260130-007</span>
+                </div>
+                <h4 class="text-base font-semibold text-gray-900 mb-1">雲端智慧科技有限公司</h4>
+                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">person</span>
+                    <span>申請人：林業務</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">calendar_today</span>
+                    <span>2026/01/30</span>
+                  </div>
+                </div>
+                <div class="mt-4 bg-green-50/50 rounded-xl p-4 text-sm text-gray-600">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div><span class="text-gray-400">方案：</span>企業版</div>
+                    <div><span class="text-gray-400">初始點數：</span>400 點</div>
+                  </div>
+                  <div class="mt-3 pt-3 border-t border-green-100">
+                    <div class="flex items-center gap-4">
+                      <div><span class="text-gray-400">審核人：</span><span class="font-medium">Admin Chen</span></div>
+                      <div><span class="text-gray-400">審核日期：</span>2026/01/31</div>
+                    </div>
+                    <div class="mt-1"><span class="text-gray-400">備註：</span>新客戶核准，請盡速建立帳號</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Approved Item 3 -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 reveal">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="badge badge-uploaded">帳號新增</span>
+                  <span class="badge badge-approved">已核准</span>
+                  <span class="text-xs text-gray-400">AP-20260125-008</span>
+                </div>
+                <h4 class="text-base font-semibold text-gray-900 mb-1">瑞昱半導體股份有限公司</h4>
+                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">person</span>
+                    <span>申請人：陳業務</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">calendar_today</span>
+                    <span>2026/01/25</span>
+                  </div>
+                </div>
+                <div class="mt-4 bg-green-50/50 rounded-xl p-4 text-sm text-gray-600">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div><span class="text-gray-400">新增帳號：</span>劉工程師</div>
+                    <div><span class="text-gray-400">角色：</span>程式碼上傳員</div>
+                  </div>
+                  <div class="mt-3 pt-3 border-t border-green-100">
+                    <div class="flex items-center gap-4">
+                      <div><span class="text-gray-400">審核人：</span><span class="font-medium">Admin Chen</span></div>
+                      <div><span class="text-gray-400">審核日期：</span>2026/01/26</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Tab: Rejected -->
+      <div id="tab-rejected" class="tab-content" data-tab-content="approval">
+        <div class="space-y-4">
+
+          <!-- Rejected Item 1 -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 reveal">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="badge badge-uploaded">帳號新增</span>
+                  <span class="badge badge-rejected">已駁回</span>
+                  <span class="text-xs text-gray-400">AP-20260201-009</span>
+                </div>
+                <h4 class="text-base font-semibold text-gray-900 mb-1">旭展科技股份有限公司</h4>
+                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">person</span>
+                    <span>申請人：王業務</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">calendar_today</span>
+                    <span>2026/02/01</span>
+                  </div>
+                </div>
+                <div class="mt-4 bg-red-50/50 rounded-xl p-4 text-sm text-gray-600">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div><span class="text-gray-400">申請帳號：</span>外部顧問 A</div>
+                    <div><span class="text-gray-400">角色：</span>管理員</div>
+                  </div>
+                  <div class="mt-3 pt-3 border-t border-red-100">
+                    <div class="flex items-center gap-4">
+                      <div><span class="text-gray-400">審核人：</span><span class="font-medium">Admin Chen</span></div>
+                      <div><span class="text-gray-400">審核日期：</span>2026/02/02</div>
+                    </div>
+                    <div class="mt-1"><span class="text-gray-400">駁回原因：</span><span class="text-danger">外部人員不得直接授予管理員權限，請改為檢視員角色後重新申請</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rejected Item 2 -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 reveal">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="badge badge-scanning">點數加值</span>
+                  <span class="badge badge-rejected">已駁回</span>
+                  <span class="text-xs text-gray-400">AP-20260128-010</span>
+                </div>
+                <h4 class="text-base font-semibold text-gray-900 mb-1">鼎新電腦股份有限公司</h4>
+                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">person</span>
+                    <span>申請人：王業務</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span class="material-icons-outlined text-sm">calendar_today</span>
+                    <span>2026/01/28</span>
+                  </div>
+                </div>
+                <div class="mt-4 bg-red-50/50 rounded-xl p-4 text-sm text-gray-600">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div><span class="text-gray-400">加值點數：</span>+500 點</div>
+                    <div><span class="text-gray-400">目前狀態：</span>已停用</div>
+                  </div>
+                  <div class="mt-3 pt-3 border-t border-red-100">
+                    <div class="flex items-center gap-4">
+                      <div><span class="text-gray-400">審核人：</span><span class="font-medium">Admin Chen</span></div>
+                      <div><span class="text-gray-400">審核日期：</span>2026/01/29</div>
+                    </div>
+                    <div class="mt-1"><span class="text-gray-400">駁回原因：</span><span class="text-danger">該客戶帳戶已停用，需先重新啟用合約方可進行點數加值</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Approve Confirmation Modal -->
+  <div id="approveModal" class="modal-overlay fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
+    <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-11 h-11 rounded-full bg-success/10 flex items-center justify-center">
+          <span class="material-icons-outlined text-success text-2xl">check_circle</span>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900">確認核准</h3>
+          <p class="text-sm text-gray-500" id="approveModalDesc">確定要核准此申請？</p>
+        </div>
+      </div>
+      <div class="bg-gray-50 rounded-xl p-4 mb-4">
+        <div class="text-sm text-gray-600">
+          <p><span class="text-gray-400">申請編號：</span><span id="approveModalId" class="font-mono">-</span></p>
+          <p class="mt-1"><span class="text-gray-400">公司名稱：</span><span id="approveModalCompany">-</span></p>
+          <p class="mt-1"><span class="text-gray-400">申請類型：</span><span id="approveModalType">-</span></p>
+        </div>
+      </div>
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">審核備註（選填）</label>
+        <textarea id="approveComment" rows="3" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm resize-none bg-gray-50 focus:bg-white" placeholder="輸入核准備註..."></textarea>
+      </div>
+      <div class="flex items-center justify-end gap-3">
+        <button onclick="closeModal('approveModal')" class="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors">取消</button>
+        <button onclick="confirmApprove()" class="px-6 py-2.5 text-sm font-medium bg-success text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2">
+          <span class="material-icons-outlined text-lg">check</span>
+          確認核准
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reject Confirmation Modal -->
+  <div id="rejectModal" class="modal-overlay fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
+    <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-11 h-11 rounded-full bg-danger/10 flex items-center justify-center">
+          <span class="material-icons-outlined text-danger text-2xl">cancel</span>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900">確認駁回</h3>
+          <p class="text-sm text-gray-500" id="rejectModalDesc">確定要駁回此申請？</p>
+        </div>
+      </div>
+      <div class="bg-gray-50 rounded-xl p-4 mb-4">
+        <div class="text-sm text-gray-600">
+          <p><span class="text-gray-400">申請編號：</span><span id="rejectModalId" class="font-mono">-</span></p>
+          <p class="mt-1"><span class="text-gray-400">公司名稱：</span><span id="rejectModalCompany">-</span></p>
+          <p class="mt-1"><span class="text-gray-400">申請類型：</span><span id="rejectModalType">-</span></p>
+        </div>
+      </div>
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">駁回原因 <span class="text-danger">*</span></label>
+        <textarea id="rejectComment" rows="3" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm resize-none bg-gray-50 focus:bg-white" placeholder="請說明駁回原因，此內容將通知申請人..." required></textarea>
+      </div>
+      <div class="flex items-center justify-end gap-3">
+        <button onclick="closeModal('rejectModal')" class="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors">取消</button>
+        <button onclick="confirmReject()" class="px-6 py-2.5 text-sm font-medium bg-danger text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2">
+          <span class="material-icons-outlined text-lg">close</span>
+          確認駁回
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/common.js"></script>
+  <script>
+    // Current approval context
+    let currentApprovalId = '';
+
+    function openApproveModal(id, company, type) {
+      currentApprovalId = id;
+      document.getElementById('approveModalId').textContent = id;
+      document.getElementById('approveModalCompany').textContent = company;
+      document.getElementById('approveModalType').textContent = type;
+      document.getElementById('approveModalDesc').textContent = `確定要核准「${company}」的「${type}」申請？`;
+      document.getElementById('approveComment').value = '';
+      openModal('approveModal');
+    }
+
+    function openRejectModal(id, company, type) {
+      currentApprovalId = id;
+      document.getElementById('rejectModalId').textContent = id;
+      document.getElementById('rejectModalCompany').textContent = company;
+      document.getElementById('rejectModalType').textContent = type;
+      document.getElementById('rejectModalDesc').textContent = `確定要駁回「${company}」的「${type}」申請？`;
+      document.getElementById('rejectComment').value = '';
+      openModal('rejectModal');
+    }
+
+    function confirmApprove() {
+      closeModal('approveModal');
+      showToast('已核准申請 ' + currentApprovalId, 'success');
+      // In a real app, the card would move to the approved tab
+    }
+
+    function confirmReject() {
+      const reason = document.getElementById('rejectComment').value.trim();
+      if (!reason) {
+        document.getElementById('rejectComment').style.borderColor = '#DC3545';
+        document.getElementById('rejectComment').focus();
+        return;
+      }
+      closeModal('rejectModal');
+      showToast('已駁回申請 ' + currentApprovalId, 'info');
+      // In a real app, the card would move to the rejected tab
+    }
+  </script>
+</body>
+</html>

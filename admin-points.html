@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>點數管理 - StormIQ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Material+Icons+Outlined&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#81C0EA',
+            secondary: '#0242C7',
+            action: '#008CE3',
+            'action-hover': '#0078C7',
+            cyan: '#00B2E3',
+            success: '#198754',
+            warning: '#FFC107',
+            danger: '#DC3545',
+            'body-bg': '#F8F9FA',
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+          },
+          borderRadius: {
+            '2xl': '1rem',
+            '3xl': '1.25rem',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-body-bg font-sans text-gray-800 flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed left-0 top-0 h-full w-[260px] bg-white border-r border-gray-200 z-40 flex flex-col">
+    <!-- Logo -->
+    <div class="p-6 pb-4">
+      <div class="flex items-center gap-2">
+        <span class="material-icons-outlined text-3xl text-action">shield</span>
+        <div>
+          <h1 class="text-xl font-bold gradient-text">StormIQ</h1>
+          <p class="text-[11px] text-gray-400 font-medium tracking-wide">管理後台</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 py-2 overflow-y-auto">
+      <a href="admin-dashboard.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">analytics</span>
+        <span>管理儀表板</span>
+      </a>
+      <a href="admin-customers.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">business</span>
+        <span>客戶管理</span>
+      </a>
+      <a href="admin-approval.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">fact_check</span>
+        <span>審核管理</span>
+        <span class="ml-auto px-2 py-0.5 text-[10px] font-semibold bg-yellow-100 text-yellow-700 rounded-full">PDM</span>
+      </a>
+      <a href="admin-points.html" class="nav-item active">
+        <span class="material-icons-outlined text-xl">toll</span>
+        <span>點數管理</span>
+      </a>
+      <a href="admin-perm-frontend.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">manage_accounts</span>
+        <span>前台權限管理</span>
+      </a>
+      <a href="admin-perm-backend.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">shield</span>
+        <span>後台權限管理</span>
+      </a>
+    </nav>
+
+    <!-- Bottom -->
+    <div class="p-4 border-t border-gray-100">
+      <div class="flex items-center gap-3 px-3 py-2">
+        <div class="w-9 h-9 rounded-full bg-action/10 flex items-center justify-center">
+          <span class="material-icons-outlined text-action text-lg">person</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-1.5">
+            <span class="badge badge-scanning text-[10px] px-1.5 py-0">業務</span>
+            <span class="text-gray-300 text-[10px]">·</span>
+            <span class="badge badge-pending text-[10px] px-1.5 py-0">PDM</span>
+          </div>
+          <p class="text-sm font-medium text-gray-800 truncate mt-0.5">Admin Chen</p>
+        </div>
+      </div>
+      <!-- Switch to Frontend -->
+      <a href="dashboard.html" class="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-400 hover:text-action transition-colors mb-1">
+        <span class="material-icons-outlined text-lg">swap_horiz</span>
+        切換至客戶端
+      </a>
+      <a href="login.html" class="nav-item mt-1 text-gray-400 hover:text-danger">
+        <span class="material-icons-outlined text-lg">logout</span>
+        <span>登出</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div id="main-content" class="ml-[260px] flex-1 flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-30">
+      <div class="flex items-center gap-2 text-sm">
+        <span class="text-gray-400">管理後台</span>
+        <span class="material-icons-outlined text-gray-300 text-sm">chevron_right</span>
+        <span class="text-gray-700 font-medium">點數管理</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <span class="material-icons-outlined text-gray-400 cursor-pointer hover:text-gray-600 transition-colors">notifications</span>
+          <span class="absolute -top-1 -right-1 w-4 h-4 bg-danger text-white text-[10px] font-bold rounded-full flex items-center justify-center">3</span>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-action/10 flex items-center justify-center">
+          <span class="material-icons-outlined text-action text-sm">person</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="flex-1 p-8">
+      <!-- Page Title -->
+      <div class="mb-6 reveal">
+        <h2 class="text-2xl font-bold text-gray-900">點數管理</h2>
+        <p class="text-sm text-gray-500 mt-1">管理客戶公司的點數購買、使用與退還紀錄</p>
+      </div>
+
+      <!-- Company Selector -->
+      <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm mb-6 reveal">
+        <label class="block text-sm font-medium text-gray-700 mb-2">選擇客戶公司</label>
+        <div class="flex items-center gap-4">
+          <div class="relative flex-1 max-w-md">
+            <span class="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl">business</span>
+            <select id="companySelector" onchange="selectCompany(this.value)" class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:bg-white appearance-none cursor-pointer">
+              <option value="">-- 請選擇公司 --</option>
+              <option value="yisheng" selected>毅聲科技股份有限公司</option>
+              <option value="daxin">達新資訊有限公司</option>
+              <option value="haitong">海通國際科技</option>
+              <option value="yongfeng">永豐數位科技</option>
+              <option value="lianhe">聯合資安顧問</option>
+              <option value="zhonghua">中華軟體開發</option>
+              <option value="taida">台達智慧系統</option>
+              <option value="guoguang">國光網路科技</option>
+            </select>
+            <span class="material-icons-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none">expand_more</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Company Points Summary -->
+      <div id="companyCard" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 reveal">
+        <div class="stat-card">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm text-gray-500">公司名稱</span>
+            <span class="material-icons-outlined text-action text-xl">business</span>
+          </div>
+          <p class="text-lg font-bold text-gray-900" id="companyName">毅聲科技股份有限公司</p>
+          <p class="text-xs text-gray-400 mt-1">客戶編號：CUST-2024-001</p>
+        </div>
+        <div class="stat-card">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm text-gray-500">目前剩餘點數</span>
+            <span class="material-icons-outlined text-success text-xl">toll</span>
+          </div>
+          <p class="text-3xl font-bold text-gray-900 count-up" data-target="42" id="currentPoints">0</p>
+          <p class="text-xs text-gray-400 mt-1">可使用點數</p>
+        </div>
+        <div class="stat-card">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm text-gray-500">累計購買點數</span>
+            <span class="material-icons-outlined text-action text-xl">shopping_cart</span>
+          </div>
+          <p class="text-3xl font-bold text-gray-900 count-up" data-target="200" id="totalPurchased">0</p>
+          <p class="text-xs text-gray-400 mt-1">總購入量</p>
+        </div>
+        <div class="stat-card">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm text-gray-500">累計使用點數</span>
+            <span class="material-icons-outlined text-warning text-xl">data_usage</span>
+          </div>
+          <p class="text-3xl font-bold text-gray-900 count-up" data-target="158" id="totalUsed">0</p>
+          <p class="text-xs text-gray-400 mt-1">已消耗量</p>
+        </div>
+      </div>
+
+      <!-- Action Bar -->
+      <div class="flex items-center justify-between mb-4 reveal">
+        <h3 class="text-lg font-semibold text-gray-900">點數交易紀錄</h3>
+        <button onclick="openModal('addPointsModal')" class="inline-flex items-center gap-2 bg-action hover:bg-action-hover text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150">
+          <span class="material-icons-outlined text-lg">add_circle</span>
+          加值點數
+        </button>
+      </div>
+
+      <!-- Points Transaction Table -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden reveal">
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr class="bg-gray-50/50">
+                <th>日期</th>
+                <th>類型</th>
+                <th>數量</th>
+                <th>操作者</th>
+                <th>備註</th>
+                <th>餘額</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-gray-600">2026/02/10 14:30</td>
+                <td><span class="badge badge-failed">扣除</span></td>
+                <td class="font-semibold text-danger">-1</td>
+                <td>Roger Chang</td>
+                <td class="text-gray-500">掃描上傳：payment-module.zip</td>
+                <td class="font-semibold">42</td>
+              </tr>
+              <tr>
+                <td class="text-gray-600">2026/02/09 09:15</td>
+                <td><span class="badge badge-failed">扣除</span></td>
+                <td class="font-semibold text-danger">-1</td>
+                <td>林小華</td>
+                <td class="text-gray-500">掃描上傳：auth-service.tar.gz</td>
+                <td class="font-semibold">43</td>
+              </tr>
+              <tr>
+                <td class="text-gray-600">2026/02/08 16:45</td>
+                <td><span class="badge badge-failed">扣除</span></td>
+                <td class="font-semibold text-danger">-1</td>
+                <td>張美玲</td>
+                <td class="text-gray-500">掃描上傳：api-gateway.zip</td>
+                <td class="font-semibold">44</td>
+              </tr>
+              <tr>
+                <td class="text-gray-600">2026/02/07 11:20</td>
+                <td><span class="badge badge-failed">扣除</span></td>
+                <td class="font-semibold text-danger">-1</td>
+                <td>Roger Chang</td>
+                <td class="text-gray-500">掃描上傳：user-portal.zip</td>
+                <td class="font-semibold">45</td>
+              </tr>
+              <tr>
+                <td class="text-gray-600">2026/02/05 08:00</td>
+                <td><span class="badge badge-failed">扣除</span></td>
+                <td class="font-semibold text-danger">-1</td>
+                <td>王大明</td>
+                <td class="text-gray-500">掃描上傳：mobile-app.zip</td>
+                <td class="font-semibold">46</td>
+              </tr>
+              <tr>
+                <td class="text-gray-600">2026/02/01 10:00</td>
+                <td><span class="badge badge-completed">購買</span></td>
+                <td class="font-semibold text-success">+50</td>
+                <td>Admin Chen</td>
+                <td class="text-gray-500">月度點數加值（審核通過）</td>
+                <td class="font-semibold">47</td>
+              </tr>
+              <tr>
+                <td class="text-gray-600">2026/01/28 15:30</td>
+                <td><span class="badge badge-failed">扣除</span></td>
+                <td class="font-semibold text-danger">-1</td>
+                <td>林小華</td>
+                <td class="text-gray-500">掃描上傳：cms-backend.zip</td>
+                <td class="font-semibold">-3</td>
+              </tr>
+              <tr>
+                <td class="text-gray-600">2026/01/25 09:45</td>
+                <td><span class="badge badge-pending">退還</span></td>
+                <td class="font-semibold text-yellow-600">+1</td>
+                <td>系統</td>
+                <td class="text-gray-500">掃描失敗自動退還：db-migration.zip</td>
+                <td class="font-semibold">-2</td>
+              </tr>
+              <tr>
+                <td class="text-gray-600">2026/01/22 14:00</td>
+                <td><span class="badge badge-failed">扣除</span></td>
+                <td class="font-semibold text-danger">-1</td>
+                <td>張美玲</td>
+                <td class="text-gray-500">掃描上傳：db-migration.zip</td>
+                <td class="font-semibold">-3</td>
+              </tr>
+              <tr>
+                <td class="text-gray-600">2026/01/15 11:30</td>
+                <td><span class="badge badge-failed">扣除</span></td>
+                <td class="font-semibold text-danger">-1</td>
+                <td>Roger Chang</td>
+                <td class="text-gray-500">掃描上傳：notification-svc.zip</td>
+                <td class="font-semibold">-2</td>
+              </tr>
+              <tr>
+                <td class="text-gray-600">2026/01/10 10:00</td>
+                <td><span class="badge badge-completed">購買</span></td>
+                <td class="font-semibold text-success">+50</td>
+                <td>Admin Chen</td>
+                <td class="text-gray-500">季度合約點數加值</td>
+                <td class="font-semibold">-1</td>
+              </tr>
+              <tr>
+                <td class="text-gray-600">2025/12/20 16:00</td>
+                <td><span class="badge badge-failed">扣除</span></td>
+                <td class="font-semibold text-danger">-1</td>
+                <td>王大明</td>
+                <td class="text-gray-500">掃描上傳：logging-lib.zip</td>
+                <td class="font-semibold">-51</td>
+              </tr>
+              <tr>
+                <td class="text-gray-600">2025/12/01 09:00</td>
+                <td><span class="badge badge-completed">購買</span></td>
+                <td class="font-semibold text-success">+100</td>
+                <td>Admin Chen</td>
+                <td class="text-gray-500">首次合約購買點數</td>
+                <td class="font-semibold">-50</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Pagination -->
+        <div class="flex items-center justify-between px-6 py-4 border-t border-gray-100">
+          <p class="text-sm text-gray-500">顯示 1-13，共 13 筆</p>
+          <div class="flex items-center gap-1">
+            <button class="px-3 py-1.5 text-sm text-gray-400 rounded-lg cursor-not-allowed">上一頁</button>
+            <button class="px-3 py-1.5 text-sm bg-action text-white rounded-lg">1</button>
+            <button class="px-3 py-1.5 text-sm text-gray-400 rounded-lg cursor-not-allowed">下一頁</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add Points Modal -->
+  <div id="addPointsModal" class="modal-overlay fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
+    <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-md mx-4">
+      <div class="flex items-center justify-between p-6 border-b border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-900">加值點數</h3>
+        <button onclick="closeModal('addPointsModal')" class="text-gray-400 hover:text-gray-600 transition-colors">
+          <span class="material-icons-outlined">close</span>
+        </button>
+      </div>
+      <div class="p-6 space-y-5">
+        <div>
+          <p class="text-sm text-gray-500 mb-1">目標公司</p>
+          <p class="text-sm font-semibold text-gray-800">毅聲科技股份有限公司</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500 mb-1">目前餘額</p>
+          <p class="text-2xl font-bold text-action">42 <span class="text-sm font-normal text-gray-400">點</span></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">加值數量</label>
+          <input type="number" id="addPointsAmount" placeholder="請輸入點數" min="1" class="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:bg-white">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">加值原因</label>
+          <textarea id="addPointsReason" rows="3" placeholder="請輸入加值原因（例：月度合約加值）" class="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:bg-white resize-none"></textarea>
+        </div>
+        <div class="bg-yellow-50 rounded-lg p-3">
+          <div class="flex items-start gap-2">
+            <span class="material-icons-outlined text-yellow-600 text-lg mt-0.5">info</span>
+            <p class="text-xs text-yellow-700">加值申請將送出至 PDM 進行審核，審核通過後點數將即時加入客戶帳戶。</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-100">
+        <button onclick="closeModal('addPointsModal')" class="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors">取消</button>
+        <button onclick="submitAddPoints()" id="submitPointsBtn" class="inline-flex items-center gap-2 bg-action hover:bg-action-hover text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150">
+          <span class="material-icons-outlined text-lg">send</span>
+          提交申請
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/common.js"></script>
+  <script>
+    // Company data
+    const companyData = {
+      yisheng: { name: '毅聲科技股份有限公司', id: 'CUST-2024-001', current: 42, purchased: 200, used: 158 },
+      daxin: { name: '達新資訊有限公司', id: 'CUST-2024-002', current: 85, purchased: 150, used: 65 },
+      haitong: { name: '海通國際科技', id: 'CUST-2024-003', current: 12, purchased: 100, used: 88 },
+      yongfeng: { name: '永豐數位科技', id: 'CUST-2024-004', current: 230, purchased: 500, used: 270 },
+      lianhe: { name: '聯合資安顧問', id: 'CUST-2024-005', current: 67, purchased: 120, used: 53 },
+      zhonghua: { name: '中華軟體開發', id: 'CUST-2024-006', current: 5, purchased: 80, used: 75 },
+      taida: { name: '台達智慧系統', id: 'CUST-2024-007', current: 140, purchased: 300, used: 160 },
+      guoguang: { name: '國光網路科技', id: 'CUST-2024-008', current: 28, purchased: 60, used: 32 },
+    };
+
+    function selectCompany(value) {
+      if (!value) return;
+      const data = companyData[value];
+      if (!data) return;
+      document.getElementById('companyName').textContent = data.name;
+      document.querySelector('#companyCard .text-xs.text-gray-400').textContent = '客戶編號：' + data.id;
+
+      // Re-animate count-ups
+      const currentEl = document.getElementById('currentPoints');
+      const purchasedEl = document.getElementById('totalPurchased');
+      const usedEl = document.getElementById('totalUsed');
+      animateCountUp(currentEl, data.current);
+      animateCountUp(purchasedEl, data.purchased);
+      animateCountUp(usedEl, data.used);
+    }
+
+    function submitAddPoints() {
+      const btn = document.getElementById('submitPointsBtn');
+      const amount = document.getElementById('addPointsAmount').value;
+      const reason = document.getElementById('addPointsReason').value;
+      if (!amount || amount <= 0) {
+        showToast('請輸入有效的點數數量', 'error');
+        return;
+      }
+      if (!reason.trim()) {
+        showToast('請輸入加值原因', 'error');
+        return;
+      }
+      setButtonLoading(btn, true);
+      setTimeout(() => {
+        setButtonLoading(btn, false);
+        closeModal('addPointsModal');
+        showToast('加值申請已提交，等待 PDM 審核', 'success');
+        document.getElementById('addPointsAmount').value = '';
+        document.getElementById('addPointsReason').value = '';
+      }, 1200);
+    }
+  </script>
+</body>
+</html>

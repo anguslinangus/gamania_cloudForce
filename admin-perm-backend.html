@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>後台權限管理 - StormIQ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Material+Icons+Outlined&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#81C0EA',
+            secondary: '#0242C7',
+            action: '#008CE3',
+            'action-hover': '#0078C7',
+            cyan: '#00B2E3',
+            success: '#198754',
+            warning: '#FFC107',
+            danger: '#DC3545',
+            'body-bg': '#F8F9FA',
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+          },
+          borderRadius: {
+            '2xl': '1rem',
+            '3xl': '1.25rem',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-body-bg font-sans text-gray-800 flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed left-0 top-0 h-full w-[260px] bg-white border-r border-gray-200 z-40 flex flex-col">
+    <!-- Logo -->
+    <div class="p-6 pb-4">
+      <div class="flex items-center gap-2">
+        <span class="material-icons-outlined text-3xl text-action">shield</span>
+        <div>
+          <h1 class="text-xl font-bold gradient-text">StormIQ</h1>
+          <p class="text-[11px] text-gray-400 font-medium tracking-wide">管理後台</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 py-2 overflow-y-auto">
+      <a href="admin-dashboard.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">analytics</span>
+        <span>管理儀表板</span>
+      </a>
+      <a href="admin-customers.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">business</span>
+        <span>客戶管理</span>
+      </a>
+      <a href="admin-approval.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">fact_check</span>
+        <span>審核管理</span>
+        <span class="ml-auto px-2 py-0.5 text-[10px] font-semibold bg-yellow-100 text-yellow-700 rounded-full">PDM</span>
+      </a>
+      <a href="admin-points.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">toll</span>
+        <span>點數管理</span>
+      </a>
+      <a href="admin-perm-frontend.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">manage_accounts</span>
+        <span>前台權限管理</span>
+      </a>
+      <a href="admin-perm-backend.html" class="nav-item active">
+        <span class="material-icons-outlined text-xl">shield</span>
+        <span>後台權限管理</span>
+      </a>
+    </nav>
+
+    <!-- Bottom -->
+    <div class="p-4 border-t border-gray-100">
+      <div class="flex items-center gap-3 px-3 py-2">
+        <div class="w-9 h-9 rounded-full bg-action/10 flex items-center justify-center">
+          <span class="material-icons-outlined text-action text-lg">person</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-1.5">
+            <span class="badge badge-scanning text-[10px] px-1.5 py-0">業務</span>
+            <span class="text-gray-300 text-[10px]">·</span>
+            <span class="badge badge-pending text-[10px] px-1.5 py-0">PDM</span>
+          </div>
+          <p class="text-sm font-medium text-gray-800 truncate mt-0.5">Admin Chen</p>
+        </div>
+      </div>
+      <!-- Switch to Frontend -->
+      <a href="dashboard.html" class="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-400 hover:text-action transition-colors mb-1">
+        <span class="material-icons-outlined text-lg">swap_horiz</span>
+        切換至客戶端
+      </a>
+      <a href="login.html" class="nav-item mt-1 text-gray-400 hover:text-danger">
+        <span class="material-icons-outlined text-lg">logout</span>
+        <span>登出</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div id="main-content" class="ml-[260px] flex-1 flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-30">
+      <div class="flex items-center gap-2 text-sm">
+        <span class="text-gray-400">管理後台</span>
+        <span class="material-icons-outlined text-gray-300 text-sm">chevron_right</span>
+        <span class="text-gray-700 font-medium">後台權限管理</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <span class="material-icons-outlined text-gray-400 cursor-pointer hover:text-gray-600 transition-colors">notifications</span>
+          <span class="absolute -top-1 -right-1 w-4 h-4 bg-danger text-white text-[10px] font-bold rounded-full flex items-center justify-center">3</span>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-action/10 flex items-center justify-center">
+          <span class="material-icons-outlined text-action text-sm">person</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="flex-1 p-8">
+      <!-- Page Title + Action -->
+      <div class="flex items-center justify-between mb-6 reveal">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900">後台權限管理</h2>
+          <p class="text-sm text-gray-500 mt-1">管理後台管理人員的帳號與功能權限</p>
+        </div>
+        <button onclick="openModal('addAdminModal')" class="inline-flex items-center gap-2 bg-action hover:bg-action-hover text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150">
+          <span class="material-icons-outlined text-lg">person_add</span>
+          新增後台帳號
+        </button>
+      </div>
+
+      <!-- Backend Users Permission Table -->
+      <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm reveal">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h3 class="text-base font-semibold text-gray-900">後台帳號列表</h3>
+            <p class="text-xs text-gray-500 mt-0.5">共 6 個後台帳號</p>
+          </div>
+          <button onclick="saveBackendPermissions()" id="saveBackPermBtn" class="inline-flex items-center gap-2 bg-action hover:bg-action-hover text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150">
+            <span class="material-icons-outlined text-lg">save</span>
+            儲存權限
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="data-table" id="backendPermTable">
+            <thead>
+              <tr class="bg-gray-50/50">
+                <th>帳號</th>
+                <th>姓名</th>
+                <th>角色</th>
+                <th>狀態</th>
+                <th class="text-center">客戶管理</th>
+                <th class="text-center">審核權限</th>
+                <th class="text-center">點數管理</th>
+                <th class="text-center">前台權限管理</th>
+                <th class="text-center">後台權限管理</th>
+              </tr>
+            </thead>
+            <tbody id="backendPermBody">
+              <!-- Row 1 -->
+              <tr>
+                <td class="font-medium text-gray-700">admin.chen</td>
+                <td class="font-medium text-gray-800">陳建宏</td>
+                <td>
+                  <div class="flex items-center gap-1.5">
+                    <span class="badge badge-scanning">業務</span>
+                    <span class="badge badge-pending">PDM</span>
+                  </div>
+                </td>
+                <td><span class="badge badge-active">啟用中</span></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+              </tr>
+              <!-- Row 2 -->
+              <tr>
+                <td class="font-medium text-gray-700">wang.sales</td>
+                <td class="font-medium text-gray-800">王志偉</td>
+                <td><span class="badge badge-scanning">業務</span></td>
+                <td><span class="badge badge-active">啟用中</span></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch mx-auto" onclick="this.classList.toggle('active')"></div></td>
+              </tr>
+              <!-- Row 3 -->
+              <tr>
+                <td class="font-medium text-gray-700">lin.pdm</td>
+                <td class="font-medium text-gray-800">林美玲</td>
+                <td><span class="badge badge-pending">PDM</span></td>
+                <td><span class="badge badge-active">啟用中</span></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+              </tr>
+              <!-- Row 4 -->
+              <tr>
+                <td class="font-medium text-gray-700">zhang.sales</td>
+                <td class="font-medium text-gray-800">張國豪</td>
+                <td><span class="badge badge-scanning">業務</span></td>
+                <td><span class="badge badge-active">啟用中</span></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch mx-auto" onclick="this.classList.toggle('active')"></div></td>
+              </tr>
+              <!-- Row 5 -->
+              <tr>
+                <td class="font-medium text-gray-700">liu.pdm</td>
+                <td class="font-medium text-gray-800">劉淑芬</td>
+                <td><span class="badge badge-pending">PDM</span></td>
+                <td><span class="badge badge-active">啟用中</span></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch active mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch mx-auto" onclick="this.classList.toggle('active')"></div></td>
+              </tr>
+              <!-- Row 6 -->
+              <tr>
+                <td class="font-medium text-gray-700">xu.sales</td>
+                <td class="font-medium text-gray-800">許家銘</td>
+                <td><span class="badge badge-scanning">業務</span></td>
+                <td><span class="badge badge-uploaded">已停用</span></td>
+                <td class="text-center"><div class="toggle-switch mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch mx-auto" onclick="this.classList.toggle('active')"></div></td>
+                <td class="text-center"><div class="toggle-switch mx-auto" onclick="this.classList.toggle('active')"></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-4 bg-blue-50 rounded-lg p-3">
+          <div class="flex items-start gap-2">
+            <span class="material-icons-outlined text-action text-lg mt-0.5">info</span>
+            <p class="text-xs text-gray-600">審核權限與後台權限管理通常僅授予 PDM 角色。業務角色預設擁有客戶管理與點數管理權限。權限變更儲存後立即生效。</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add Backend Admin Modal -->
+  <div id="addAdminModal" class="modal-overlay fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
+    <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4">
+      <div class="flex items-center justify-between p-6 border-b border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-900">新增後台帳號</h3>
+        <button onclick="closeModal('addAdminModal')" class="text-gray-400 hover:text-gray-600 transition-colors">
+          <span class="material-icons-outlined">close</span>
+        </button>
+      </div>
+      <div class="p-6 space-y-5">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">帳號名稱</label>
+          <input type="text" id="newAdminAccount" placeholder="例：chen.sales" class="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:bg-white">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">姓名</label>
+          <input type="text" id="newAdminName" placeholder="請輸入姓名" class="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:bg-white">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">電子郵件</label>
+          <input type="email" id="newAdminEmail" placeholder="name@cloudforce.com.tw" class="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:bg-white">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">角色</label>
+          <div class="relative">
+            <select id="newAdminRole" class="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:bg-white appearance-none cursor-pointer">
+              <option value="">-- 請選擇角色 --</option>
+              <option value="sales">業務</option>
+              <option value="pdm">PDM</option>
+            </select>
+            <span class="material-icons-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none">expand_more</span>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">初始權限</label>
+          <div class="space-y-3">
+            <label class="flex items-center justify-between py-1">
+              <span class="text-sm text-gray-600">客戶管理</span>
+              <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+            </label>
+            <label class="flex items-center justify-between py-1">
+              <span class="text-sm text-gray-600">審核權限</span>
+              <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+            </label>
+            <label class="flex items-center justify-between py-1">
+              <span class="text-sm text-gray-600">點數管理</span>
+              <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+            </label>
+            <label class="flex items-center justify-between py-1">
+              <span class="text-sm text-gray-600">前台權限管理</span>
+              <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+            </label>
+            <label class="flex items-center justify-between py-1">
+              <span class="text-sm text-gray-600">後台權限管理</span>
+              <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-100">
+        <button onclick="closeModal('addAdminModal')" class="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors">取消</button>
+        <button onclick="submitNewAdmin()" id="submitAdminBtn" class="inline-flex items-center gap-2 bg-action hover:bg-action-hover text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150">
+          <span class="material-icons-outlined text-lg">person_add</span>
+          新增帳號
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/common.js"></script>
+  <script>
+    function saveBackendPermissions() {
+      const btn = document.getElementById('saveBackPermBtn');
+      setButtonLoading(btn, true);
+      setTimeout(() => {
+        setButtonLoading(btn, false);
+        showToast('後台權限已成功儲存', 'success');
+      }, 1000);
+    }
+
+    function submitNewAdmin() {
+      const account = document.getElementById('newAdminAccount').value.trim();
+      const name = document.getElementById('newAdminName').value.trim();
+      const email = document.getElementById('newAdminEmail').value.trim();
+      const role = document.getElementById('newAdminRole').value;
+
+      if (!account) { showToast('請輸入帳號名稱', 'error'); return; }
+      if (!name) { showToast('請輸入姓名', 'error'); return; }
+      if (!email) { showToast('請輸入電子郵件', 'error'); return; }
+      if (!role) { showToast('請選擇角色', 'error'); return; }
+
+      const btn = document.getElementById('submitAdminBtn');
+      setButtonLoading(btn, true);
+      setTimeout(() => {
+        setButtonLoading(btn, false);
+        closeModal('addAdminModal');
+        showToast('新帳號「' + name + '」已成功新增', 'success');
+        // Reset form
+        document.getElementById('newAdminAccount').value = '';
+        document.getElementById('newAdminName').value = '';
+        document.getElementById('newAdminEmail').value = '';
+        document.getElementById('newAdminRole').value = '';
+      }, 1200);
+    }
+  </script>
+</body>
+</html>

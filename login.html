@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登入 - StormIQ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Material+Icons+Outlined&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#81C0EA',
+            secondary: '#0242C7',
+            action: '#008CE3',
+            'action-hover': '#0078C7',
+            cyan: '#00B2E3',
+            success: '#198754',
+            warning: '#FFC107',
+            danger: '#DC3545',
+            'body-bg': '#F8F9FA',
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+          },
+          borderRadius: {
+            '2xl': '1rem',
+            '3xl': '1.25rem',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-body-bg font-sans min-h-screen flex items-center justify-center p-4">
+
+  <div class="w-full max-w-[960px] bg-white rounded-2xl shadow-lg overflow-hidden flex min-h-[560px] reveal visible">
+
+    <!-- Left Panel - Gradient -->
+    <div class="login-gradient hidden md:flex flex-col justify-between w-[420px] p-10 text-white flex-shrink-0">
+      <div>
+        <!-- Logo -->
+        <div class="flex items-center gap-3 mb-2">
+          <span class="material-icons-outlined text-3xl">security</span>
+          <span class="text-2xl font-bold tracking-tight">StormIQ</span>
+        </div>
+        <p class="text-white/70 text-sm mb-12">企業資安掃描平台</p>
+
+        <!-- Tagline -->
+        <h2 class="text-2xl font-bold leading-snug mb-6">守護您的<br>程式碼安全</h2>
+        <p class="text-white/80 text-sm leading-relaxed mb-10">
+          專業的原始碼掃描服務，協助企業在開發階段即時發現安全漏洞，降低資安風險。
+        </p>
+
+        <!-- Feature Bullets -->
+        <div class="space-y-4">
+          <div class="flex items-start gap-3">
+            <span class="material-icons-outlined text-lg mt-0.5 text-white/90">shield</span>
+            <div>
+              <p class="font-medium text-sm">全面漏洞檢測</p>
+              <p class="text-white/60 text-xs mt-0.5">涵蓋 OWASP Top 10 及更多安全規則</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="material-icons-outlined text-lg mt-0.5 text-white/90">speed</span>
+            <div>
+              <p class="font-medium text-sm">快速掃描報告</p>
+              <p class="text-white/60 text-xs mt-0.5">24 小時內提供完整掃描報告</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="material-icons-outlined text-lg mt-0.5 text-white/90">description</span>
+            <div>
+              <p class="font-medium text-sm">多格式報告</p>
+              <p class="text-white/60 text-xs mt-0.5">支援 HTML 及 PDF 格式下載</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom -->
+      <p class="text-white/40 text-xs">CloudForce &copy; 2026</p>
+    </div>
+
+    <!-- Right Panel - Login Form -->
+    <div class="flex-1 flex flex-col justify-center px-10 py-12 md:px-14">
+      <div class="max-w-sm mx-auto w-full">
+        <!-- Mobile logo -->
+        <div class="md:hidden flex items-center gap-2 mb-8">
+          <span class="material-icons-outlined text-2xl text-action">security</span>
+          <span class="text-xl font-bold text-gray-900">StormIQ</span>
+        </div>
+
+        <h1 class="text-2xl font-bold text-gray-900 mb-1">歡迎回來</h1>
+        <p class="text-gray-500 text-sm mb-8">請登入您的帳號以繼續</p>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <!-- Email -->
+          <div class="mb-5">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">帳號</label>
+            <div class="relative">
+              <span class="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">email</span>
+              <input type="email" placeholder="請輸入 Email" value="roger@yisheng.com.tw"
+                class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:border-action focus:ring-0 transition-colors">
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">密碼</label>
+            <div class="relative">
+              <span class="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">lock</span>
+              <input type="password" id="passwordInput" placeholder="請輸入密碼" value="demo1234"
+                class="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl text-sm focus:border-action focus:ring-0 transition-colors">
+              <button type="button" onclick="togglePassword()" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                <span class="material-icons-outlined text-lg" id="eyeIcon">visibility_off</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Login Button -->
+          <button type="submit" id="loginBtn"
+            class="w-full bg-action hover:bg-action-hover text-white font-medium py-2.5 rounded-xl transition-colors duration-150 text-sm">
+            登入
+          </button>
+        </form>
+
+        <!-- Forgot password -->
+        <div class="text-center mt-4">
+          <a href="#" class="text-sm text-action hover:text-action-hover transition-colors" onclick="showToast('請聯繫管理員重設密碼', 'info'); return false;">忘記密碼？</a>
+        </div>
+
+        <!-- Bottom credit -->
+        <div class="mt-12 text-center">
+          <p class="text-xs text-gray-400">技術支持 CloudForce | Gamania Group</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/common.js"></script>
+  <script>
+    function togglePassword() {
+      const input = document.getElementById('passwordInput');
+      const icon = document.getElementById('eyeIcon');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility';
+      } else {
+        input.type = 'password';
+        icon.textContent = 'visibility_off';
+      }
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      setButtonLoading(btn, true);
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 1500);
+    }
+  </script>
+</body>
+</html>

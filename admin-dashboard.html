@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理儀表板 - StormIQ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Material+Icons+Outlined&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#81C0EA',
+            secondary: '#0242C7',
+            action: '#008CE3',
+            'action-hover': '#0078C7',
+            cyan: '#00B2E3',
+            success: '#198754',
+            warning: '#FFC107',
+            danger: '#DC3545',
+            'body-bg': '#F8F9FA',
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+          },
+          borderRadius: {
+            '2xl': '1rem',
+            '3xl': '1.25rem',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-body-bg font-sans text-gray-800 flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed left-0 top-0 h-full w-[260px] bg-white border-r border-gray-200 z-40 flex flex-col">
+    <!-- Logo -->
+    <div class="px-6 py-6 border-b border-gray-100">
+      <div class="flex items-center gap-2">
+        <span class="material-icons-outlined text-3xl text-action">shield</span>
+        <div>
+          <h1 class="text-xl font-bold gradient-text">StormIQ</h1>
+          <p class="text-[11px] text-gray-400 font-medium tracking-wide">管理後台</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 py-4 overflow-y-auto">
+      <a href="admin-dashboard.html" class="nav-item active">
+        <span class="material-icons-outlined text-xl">analytics</span>
+        <span>管理儀表板</span>
+      </a>
+      <a href="admin-customers.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">business</span>
+        <span>客戶管理</span>
+      </a>
+      <a href="admin-approval.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">fact_check</span>
+        <span>審核管理</span>
+        <span class="ml-auto bg-danger text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">5</span>
+      </a>
+      <a href="admin-points.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">toll</span>
+        <span>點數管理</span>
+      </a>
+      <a href="admin-perm-frontend.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">manage_accounts</span>
+        <span>前台權限管理</span>
+      </a>
+      <a href="admin-perm-backend.html" class="nav-item">
+        <span class="material-icons-outlined text-xl">shield</span>
+        <span>後台權限管理</span>
+      </a>
+    </nav>
+
+    <!-- Bottom -->
+    <div class="border-t border-gray-100 p-4">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-9 h-9 rounded-full bg-action/10 flex items-center justify-center">
+          <span class="material-icons-outlined text-action text-lg">person</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold text-gray-800 truncate">Admin Chen</p>
+          <p class="text-[11px] text-gray-400">業務 · PDM</p>
+        </div>
+      </div>
+      <!-- Switch to Frontend -->
+      <a href="dashboard.html" class="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-400 hover:text-action transition-colors mb-1">
+        <span class="material-icons-outlined text-lg">swap_horiz</span>
+        切換至客戶端
+      </a>
+      <a href="login.html" class="flex items-center gap-2 text-sm text-gray-400 hover:text-danger transition-colors px-1">
+        <span class="material-icons-outlined text-lg">logout</span>
+        <span>登出</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div id="main-content" class="ml-[260px] flex-1 flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-30">
+      <div class="flex items-center gap-2 text-sm">
+        <span class="text-gray-400">StormIQ</span>
+        <span class="text-gray-300">/</span>
+        <span class="text-gray-800 font-medium">管理儀表板</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <button class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+          <span class="material-icons-outlined text-xl">notifications</span>
+          <span id="notification-badge" class="absolute -top-0.5 -right-0.5 bg-danger text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">3</span>
+        </button>
+        <div class="w-8 h-8 rounded-full bg-action/10 flex items-center justify-center">
+          <span class="material-icons-outlined text-action text-sm">person</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="flex-1 p-8">
+      <!-- Page Title -->
+      <div class="mb-8 reveal">
+        <h2 class="text-2xl font-bold text-gray-900">管理儀表板</h2>
+        <p class="text-sm text-gray-500 mt-1">歡迎回來，Admin Chen。以下是平台最新概覽。</p>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Companies -->
+        <div class="stat-card reveal">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-sm text-gray-500 font-medium">總客戶公司數</span>
+            <div class="w-10 h-10 rounded-xl bg-action/10 flex items-center justify-center">
+              <span class="material-icons-outlined text-action">business</span>
+            </div>
+          </div>
+          <div class="text-3xl font-bold text-gray-900 count-up" data-target="38" data-comma="true">0</div>
+          <div class="mt-2 flex items-center gap-2">
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-green-50 text-success">+3</span>
+            <span class="text-xs text-gray-400">本月新增</span>
+          </div>
+          <div class="mt-3 pt-3 border-t border-gray-50">
+            <a href="admin-customers.html" class="text-xs text-action hover:text-action-hover font-medium transition-colors">查看詳情 →</a>
+          </div>
+        </div>
+
+        <!-- Total Accounts -->
+        <div class="stat-card reveal">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-sm text-gray-500 font-medium">總帳號數</span>
+            <div class="w-10 h-10 rounded-xl bg-cyan/10 flex items-center justify-center">
+              <span class="material-icons-outlined text-cyan">people</span>
+            </div>
+          </div>
+          <div class="text-3xl font-bold text-gray-900 count-up" data-target="156" data-comma="true">0</div>
+          <div class="mt-2 flex items-center gap-2">
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-green-50 text-success">+12</span>
+            <span class="text-xs text-gray-400">本月新增</span>
+          </div>
+          <div class="mt-3 pt-3 border-t border-gray-50">
+            <a href="admin-customers.html" class="text-xs text-action hover:text-action-hover font-medium transition-colors">查看詳情 →</a>
+          </div>
+        </div>
+
+        <!-- Monthly Scans -->
+        <div class="stat-card reveal">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-sm text-gray-500 font-medium">本月掃描量</span>
+            <div class="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center">
+              <span class="material-icons-outlined text-success">security</span>
+            </div>
+          </div>
+          <div class="text-3xl font-bold text-gray-900 count-up" data-target="847" data-comma="true">0</div>
+          <div class="mt-2 flex items-center gap-2">
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-green-50 text-success">↑ 18%</span>
+            <span class="text-xs text-gray-400">較上月成長</span>
+          </div>
+          <div class="mt-3 pt-3 border-t border-gray-50">
+            <a href="#" class="text-xs text-action hover:text-action-hover font-medium transition-colors">查看詳情 →</a>
+          </div>
+        </div>
+
+        <!-- Pending Approvals -->
+        <div class="stat-card reveal" style="border-left: 3px solid #DC3545;">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-sm text-gray-500 font-medium">待審核項目</span>
+            <div class="w-10 h-10 rounded-xl bg-danger/10 flex items-center justify-center">
+              <span class="material-icons-outlined text-danger">pending_actions</span>
+            </div>
+          </div>
+          <div class="text-3xl font-bold text-danger count-up" data-target="5">0</div>
+          <div class="mt-2 flex items-center gap-2">
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-red-50 text-danger animate-pulse">需要處理</span>
+          </div>
+          <div class="mt-3 pt-3 border-t border-gray-50">
+            <a href="admin-approval.html" class="text-xs text-action hover:text-action-hover font-medium transition-colors">立即審核 →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Bar Chart -->
+        <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm reveal">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-base font-semibold text-gray-900">各客戶掃描量（前 5 名）</h3>
+            <select class="text-xs border border-gray-200 rounded-lg px-3 py-1.5 text-gray-500 focus:border-action focus:ring-0">
+              <option>本月</option>
+              <option>近三個月</option>
+              <option>本年度</option>
+            </select>
+          </div>
+          <div style="height: 280px;">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Donut Chart -->
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm reveal">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-base font-semibold text-gray-900">點數使用分佈</h3>
+          </div>
+          <div style="height: 220px;" class="flex items-center justify-center">
+            <canvas id="donutChart"></canvas>
+          </div>
+          <div class="mt-4 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full" style="background:#008CE3;"></span><span class="text-gray-600">毅聲科技</span></div>
+              <span class="font-medium text-gray-800">32%</span>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full" style="background:#0242C7;"></span><span class="text-gray-600">天鴻資訊</span></div>
+              <span class="font-medium text-gray-800">24%</span>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full" style="background:#81C0EA;"></span><span class="text-gray-600">創意數位</span></div>
+              <span class="font-medium text-gray-800">18%</span>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full" style="background:#00B2E3;"></span><span class="text-gray-600">聯合軟體</span></div>
+              <span class="font-medium text-gray-800">15%</span>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full" style="background:#E5E7EB;"></span><span class="text-gray-600">其他</span></div>
+              <span class="font-medium text-gray-800">11%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pending Approvals Table -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm mb-8 reveal">
+        <div class="flex items-center justify-between p-6 pb-0">
+          <h3 class="text-base font-semibold text-gray-900">待審核項目</h3>
+          <a href="admin-approval.html" class="text-sm text-action hover:text-action-hover font-medium transition-colors">查看全部 →</a>
+        </div>
+        <div class="p-6 overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>公司名稱</th>
+                <th>申請類型</th>
+                <th>申請人（業務）</th>
+                <th>提交日期</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-medium text-gray-800">宏達數位科技</td>
+                <td><span class="badge badge-pending">新客戶申請</span></td>
+                <td>陳業務</td>
+                <td class="text-gray-500">2026/02/10</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <button onclick="handleApprove('宏達數位科技', '新客戶申請')" class="px-3 py-1.5 text-xs font-medium bg-success text-white rounded-lg hover:bg-green-700 transition-colors">核准</button>
+                    <button onclick="handleReject('宏達數位科技', '新客戶申請')" class="px-3 py-1.5 text-xs font-medium bg-white text-danger border border-danger/30 rounded-lg hover:bg-red-50 transition-colors">駁回</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-800">毅聲科技</td>
+                <td><span class="badge badge-scanning">點數加值</span></td>
+                <td>林業務</td>
+                <td class="text-gray-500">2026/02/09</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <button onclick="handleApprove('毅聲科技', '點數加值')" class="px-3 py-1.5 text-xs font-medium bg-success text-white rounded-lg hover:bg-green-700 transition-colors">核准</button>
+                    <button onclick="handleReject('毅聲科技', '點數加值')" class="px-3 py-1.5 text-xs font-medium bg-white text-danger border border-danger/30 rounded-lg hover:bg-red-50 transition-colors">駁回</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-800">天鴻資訊</td>
+                <td><span class="badge badge-uploaded">帳號新增</span></td>
+                <td>王業務</td>
+                <td class="text-gray-500">2026/02/08</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <button onclick="handleApprove('天鴻資訊', '帳號新增')" class="px-3 py-1.5 text-xs font-medium bg-success text-white rounded-lg hover:bg-green-700 transition-colors">核准</button>
+                    <button onclick="handleReject('天鴻資訊', '帳號新增')" class="px-3 py-1.5 text-xs font-medium bg-white text-danger border border-danger/30 rounded-lg hover:bg-red-50 transition-colors">駁回</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-800">創意數位</td>
+                <td><span class="badge badge-pending">新客戶申請</span></td>
+                <td>陳業務</td>
+                <td class="text-gray-500">2026/02/07</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <button onclick="handleApprove('創意數位', '新客戶申請')" class="px-3 py-1.5 text-xs font-medium bg-success text-white rounded-lg hover:bg-green-700 transition-colors">核准</button>
+                    <button onclick="handleReject('創意數位', '新客戶申請')" class="px-3 py-1.5 text-xs font-medium bg-white text-danger border border-danger/30 rounded-lg hover:bg-red-50 transition-colors">駁回</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-800">聯合軟體</td>
+                <td><span class="badge badge-scanning">資料修改</span></td>
+                <td>林業務</td>
+                <td class="text-gray-500">2026/02/06</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <button onclick="handleApprove('聯合軟體', '資料修改')" class="px-3 py-1.5 text-xs font-medium bg-success text-white rounded-lg hover:bg-green-700 transition-colors">核准</button>
+                    <button onclick="handleReject('聯合軟體', '資料修改')" class="px-3 py-1.5 text-xs font-medium bg-white text-danger border border-danger/30 rounded-lg hover:bg-red-50 transition-colors">駁回</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recent Activity Timeline -->
+      <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm reveal">
+        <h3 class="text-base font-semibold text-gray-900 mb-6">近期活動紀錄</h3>
+        <div>
+          <div class="timeline-item">
+            <div class="absolute left-0 top-1 w-[30px] h-[30px] rounded-full bg-success/10 flex items-center justify-center">
+              <span class="material-icons-outlined text-success text-sm">check_circle</span>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-800">核准了毅聲科技的點數加值申請（+100 點）</p>
+              <p class="text-xs text-gray-400 mt-1">Admin Chen · 2026/02/10 16:30</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="absolute left-0 top-1 w-[30px] h-[30px] rounded-full bg-action/10 flex items-center justify-center">
+              <span class="material-icons-outlined text-action text-sm">person_add</span>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-800">新增了天鴻資訊的帳號（王小明）</p>
+              <p class="text-xs text-gray-400 mt-1">林業務 · 2026/02/10 14:15</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="absolute left-0 top-1 w-[30px] h-[30px] rounded-full bg-warning/10 flex items-center justify-center">
+              <span class="material-icons-outlined text-yellow-600 text-sm">edit</span>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-800">修改了創意數位的聯絡資訊</p>
+              <p class="text-xs text-gray-400 mt-1">陳業務 · 2026/02/09 11:45</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="absolute left-0 top-1 w-[30px] h-[30px] rounded-full bg-cyan/10 flex items-center justify-center">
+              <span class="material-icons-outlined text-cyan text-sm">business</span>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-800">新增客戶公司：宏達數位科技（待審核）</p>
+              <p class="text-xs text-gray-400 mt-1">陳業務 · 2026/02/08 09:30</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="absolute left-0 top-1 w-[30px] h-[30px] rounded-full bg-danger/10 flex items-center justify-center">
+              <span class="material-icons-outlined text-danger text-sm">cancel</span>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-800">駁回了旭展科技的帳號新增申請</p>
+              <p class="text-xs text-gray-400 mt-1">Admin Chen · 2026/02/07 15:20</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="absolute left-0 top-1 w-[30px] h-[30px] rounded-full bg-success/10 flex items-center justify-center">
+              <span class="material-icons-outlined text-success text-sm">toll</span>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-800">聯合軟體購入 200 點掃描點數</p>
+              <p class="text-xs text-gray-400 mt-1">王業務 · 2026/02/06 10:00</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Approval Confirmation Modal -->
+  <div id="approveModal" class="modal-overlay fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
+    <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center">
+          <span class="material-icons-outlined text-success">check_circle</span>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900">確認核准</h3>
+          <p class="text-sm text-gray-500" id="approveModalDesc">確定要核准此申請？</p>
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">備註（選填）</label>
+        <textarea rows="3" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none" placeholder="輸入備註..."></textarea>
+      </div>
+      <div class="flex items-center justify-end gap-3">
+        <button onclick="closeModal('approveModal')" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors">取消</button>
+        <button onclick="confirmApprove()" class="px-5 py-2 text-sm font-medium bg-success text-white rounded-lg hover:bg-green-700 transition-colors">確認核准</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reject Confirmation Modal -->
+  <div id="rejectModal" class="modal-overlay fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
+    <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-full bg-danger/10 flex items-center justify-center">
+          <span class="material-icons-outlined text-danger">cancel</span>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900">確認駁回</h3>
+          <p class="text-sm text-gray-500" id="rejectModalDesc">確定要駁回此申請？</p>
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">駁回原因 <span class="text-danger">*</span></label>
+        <textarea rows="3" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none" placeholder="請說明駁回原因..." required></textarea>
+      </div>
+      <div class="flex items-center justify-end gap-3">
+        <button onclick="closeModal('rejectModal')" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors">取消</button>
+        <button onclick="confirmReject()" class="px-5 py-2 text-sm font-medium bg-danger text-white rounded-lg hover:bg-red-700 transition-colors">確認駁回</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/common.js"></script>
+  <script>
+    // Bar Chart - Top 5 clients by scan count
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: ['毅聲科技', '天鴻資訊', '創意數位', '聯合軟體', '宏達數位'],
+        datasets: [{
+          label: '掃描次數',
+          data: [268, 204, 152, 127, 96],
+          backgroundColor: ['#008CE3', '#0242C7', '#81C0EA', '#00B2E3', '#93C5FD'],
+          borderRadius: 8,
+          borderSkipped: false,
+          barThickness: 36,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { font: { family: 'Inter, Noto Sans TC', size: 12 }, color: '#6B7280' },
+            border: { display: false },
+          },
+          y: {
+            grid: { color: '#F3F4F6' },
+            ticks: { font: { family: 'Inter', size: 11 }, color: '#9CA3AF' },
+            border: { display: false },
+            beginAtZero: true,
+          }
+        }
+      }
+    });
+
+    // Donut Chart - Points distribution
+    const donutCtx = document.getElementById('donutChart').getContext('2d');
+    new Chart(donutCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['毅聲科技', '天鴻資訊', '創意數位', '聯合軟體', '其他'],
+        datasets: [{
+          data: [32, 24, 18, 15, 11],
+          backgroundColor: ['#008CE3', '#0242C7', '#81C0EA', '#00B2E3', '#E5E7EB'],
+          borderWidth: 0,
+          hoverOffset: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '68%',
+        plugins: {
+          legend: { display: false },
+        },
+      }
+    });
+
+    // Approval handlers
+    function handleApprove(company, type) {
+      document.getElementById('approveModalDesc').textContent = `確定要核准「${company}」的「${type}」申請？`;
+      openModal('approveModal');
+    }
+
+    function handleReject(company, type) {
+      document.getElementById('rejectModalDesc').textContent = `確定要駁回「${company}」的「${type}」申請？`;
+      openModal('rejectModal');
+    }
+
+    function confirmApprove() {
+      closeModal('approveModal');
+      showToast('已核准申請', 'success');
+    }
+
+    function confirmReject() {
+      closeModal('rejectModal');
+      showToast('已駁回申請', 'info');
+    }
+  </script>
+</body>
+</html>
